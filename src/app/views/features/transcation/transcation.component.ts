@@ -1,22 +1,343 @@
+// import { Component, OnInit } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+// import { NgSelectModule } from '@ng-select/ng-select';
+// import { NgxPaginationModule } from 'ngx-pagination';
+// import { PaymentLogsService } from '../../../core/services/payment-logs.service';
+// import { PaymentLog, PaymentLogDetail, PaginatedPaymentLogResponse } from '../../../core/interfaces/payment-logs.interface';
+// import { swalHelper } from '../../../core/constants/swal-helper';
+// import { SidebarService } from '../../../core/services/sidebar.service';
+// import { environment } from '../../../../env/env.local';
+// import * as XLSX from 'xlsx';
+// import Swal from 'sweetalert2';
+
+// @Component({
+//   selector: 'app-payment-logs',
+//   standalone: true,
+//   imports: [
+//     CommonModule,
+//     FormsModule,
+//     NgSelectModule,
+//     NgxPaginationModule
+//   ],
+//   templateUrl: './transcation.component.html',
+//   styleUrl: './transcation.component.scss'
+// })
+// export class TranscationComponent implements OnInit {
+//   mode: 'list' | 'preview' = 'list';
+//   paymentLogs: PaymentLog[] = [];
+//   currentPaymentLog: PaymentLogDetail | null = null;
+//   isLoading: boolean = false;
+//   isSidebarCollapsed: boolean = false;
+//   environment = environment;
+
+//   payload = {
+//     page: 1,
+//     limit: 10,
+//     search: ''
+//   };
+
+//   totalPaymentLogs = 0;
+//   searchTerm: string = '';
+
+//   paginationConfig = {
+//     id: 'payment-logs-pagination',
+//     itemsPerPage: this.payload.limit,
+//     currentPage: this.payload.page,
+//     totalItems: 0
+//   };
+
+//   statusOptions = [
+//     { label: 'All Status', value: '' },
+//     { label: 'Created', value: 'created' },
+//     { label: 'Partial', value: 'partial' },
+//     { label: 'Paid', value: 'paid' },
+//     { label: 'Failed', value: 'failed' }
+//   ];
+
+//   constructor(
+//     private paymentLogsService: PaymentLogsService,
+//     private sidebarService: SidebarService
+//   ) {}
+
+//   ngOnInit(): void {
+//     this.loadPaymentLogs();
+//     this.sidebarService.isCollapsed$.subscribe((isCollapsed) => {
+//       this.isSidebarCollapsed = isCollapsed;
+//     });
+//   }
+
+//   /**
+//    * Load all payment logs
+//    */
+//   loadPaymentLogs(): void {
+//     this.isLoading = true;
+//     this.paymentLogsService.getAllPaymentLogs(this.payload).subscribe({
+//       next: (response: PaginatedPaymentLogResponse) => {
+//         this.paymentLogs = response.data?.docs || [];
+//         this.totalPaymentLogs = response.data?.totalDocs || 0;
+//         this.paginationConfig.totalItems = this.totalPaymentLogs;
+//         this.paginationConfig.currentPage = this.payload.page;
+//         this.paginationConfig.itemsPerPage = this.payload.limit;
+//         this.isLoading = false;
+//       },
+//       error: (err) => {
+//         swalHelper.messageToast(err?.error?.message ?? 'Failed to load payment logs.', 'error');
+//         this.isLoading = false;
+//       }
+//     });
+//   }
+
+//   /**
+//    * Preview payment log details
+//    */
+//   previewPaymentLog(paymentLog: PaymentLog): void {
+//     if (!paymentLog._id) return;
+
+//     this.isLoading = true;
+//     this.paymentLogsService.getPaymentLogById(paymentLog._id).subscribe({
+//       next: (response) => {
+//         this.currentPaymentLog = response.data as PaymentLogDetail;
+//         this.mode = 'preview';
+//         this.isLoading = false;
+//       },
+//       error: (err) => {
+//         swalHelper.messageToast(err?.error?.message ?? 'Failed to load payment log details.', 'error');
+//         this.isLoading = false;
+//       }
+//     });
+//   }
+
+//   /**
+//    * Back to list
+//    */
+//   cancelPreview(): void {
+//     this.currentPaymentLog = null;
+//     this.mode = 'list';
+//   }
+
+//   /**
+//    * Search payment logs
+//    */
+//   onSearch(): void {
+//     this.payload.search = this.searchTerm;
+//     this.payload.page = 1;
+//     this.paginationConfig.currentPage = 1;
+//     this.loadPaymentLogs();
+//   }
+
+//   /**
+//    * Page change handler
+//    */
+//   onPageChange(page: number): void {
+//     this.payload.page = page;
+//     this.paginationConfig.currentPage = page;
+//     this.loadPaymentLogs();
+//   }
+
+//   /**
+//    * Page size change handler
+//    */
+//   onPageSizeChange(): void {
+//     this.payload.limit = this.paginationConfig.itemsPerPage;
+//     this.payload.page = 1;
+//     this.paginationConfig.currentPage = 1;
+//     this.loadPaymentLogs();
+//   }
+
+//   /**
+//    * Refresh data
+//    */
+//   refreshData(): void {
+//     this.loadPaymentLogs();
+//   }
+
+//   /**
+//    * Export to Excel
+//    */
+//   exportToExcel(): void {
+//     Swal.fire({
+//       title: 'Preparing export...',
+//       allowOutsideClick: false,
+//       didOpen: () => {
+//         Swal.showLoading();
+//       }
+//     });
+
+//     this.paymentLogsService.getAllPaymentLogs({ page: 1, limit: 10000, search: this.searchTerm }).subscribe({
+//       next: (response: PaginatedPaymentLogResponse) => {
+//         const allPaymentLogs = response.data?.docs || [];
+
+//         if (allPaymentLogs.length === 0) {
+//           Swal.close();
+//           swalHelper.error('No payment logs to export');
+//           return;
+//         }
+
+//         try {
+//           const excelData = allPaymentLogs.map((log, index) => ({
+//             'S.No': index + 1,
+//             'Full Name': log.fullName,
+//             'Email': log.email,
+//             'Phone': log.phone,
+//             'Service': log.serviceTitle,
+//             'Razorpay Order ID': log.razorpayOrderId,
+//             'Razorpay Payment ID': log.razorpayPaymentId || 'N/A',
+//             'Total Amount': `₹${(log.totalAmount / 100).toFixed(2)}`,
+//             'Paid Amount': `₹${(log.paidAmount / 100).toFixed(2)}`,
+//             'Pending Amount': `₹${(log.pendingAmount / 100).toFixed(2)}`,
+//             'Status': this.getStatusText(log.status),
+//             'Report Generated': log.reportGenerated ? 'Yes' : 'No',
+//             'Email Sent': log.emailSent ? 'Yes' : 'No',
+//             'WhatsApp Sent': log.whatsappSent ? 'Yes' : 'No',
+//             'Created Date': this.formatDate(log.createdAt)
+//           }));
+
+//           const worksheet = XLSX.utils.json_to_sheet(excelData);
+//           const workbook = XLSX.utils.book_new();
+//           XLSX.utils.book_append_sheet(workbook, worksheet, 'Payment Logs');
+
+//           const fileName = `Payment_Logs_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
+//           XLSX.writeFile(workbook, fileName);
+
+//           Swal.close();
+//           swalHelper.showToast(`Successfully exported ${allPaymentLogs.length} payment logs to Excel`, 'success');
+//         } catch (error) {
+//           Swal.close();
+//           swalHelper.messageToast('Failed to export payment logs to Excel', 'error');
+//         }
+//       },
+//       error: (err) => {
+//         Swal.close();
+//         swalHelper.messageToast(err?.error?.message ?? 'Failed to load payment logs for export', 'error');
+//       }
+//     });
+//   }
+
+//   /**
+//    * Format date
+//    */
+//   formatDate(date: string | Date | null | undefined): string {
+//     if (!date) return 'N/A';
+//     return new Date(date).toLocaleDateString('en-IN', {
+//       year: 'numeric',
+//       month: 'short',
+//       day: 'numeric',
+//       hour: '2-digit',
+//       minute: '2-digit'
+//     });
+//   }
+
+//   /**
+//    * Format currency (convert paise to rupees)
+//    */
+//   formatCurrency(amount: number | undefined): string {
+//     if (!amount && amount !== 0) return '₹0.00';
+//     return `₹${(amount / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+//   }
+
+//   /**
+//    * Get status class
+//    */
+//   getStatusClass(status: string | undefined): string {
+//     const statusClasses: { [key: string]: string } = {
+//       'created': 'tw-bg-blue-100 tw-text-blue-800',
+//       'partial': 'tw-bg-yellow-100 tw-text-yellow-800',
+//       'paid': 'tw-bg-green-100 tw-text-green-800',
+//       'failed': 'tw-bg-red-100 tw-text-red-800'
+//     };
+//     return statusClasses[status || ''] || 'tw-bg-gray-100 tw-text-gray-800';
+//   }
+
+//   /**
+//    * Get status text
+//    */
+//   getStatusText(status: string | undefined): string {
+//     if (!status) return 'Unknown';
+//     return status.charAt(0).toUpperCase() + status.slice(1);
+//   }
+
+//   /**
+//    * Get delivery icon
+//    */
+//   getDeliveryIcon(sent: boolean | undefined): string {
+//     return sent ? 'ph-check-circle tw-text-green-600' : 'ph-x-circle tw-text-red-600';
+//   }
+
+//   /**
+//    * Get delivery text
+//    */
+//   getDeliveryText(sent: boolean | undefined): string {
+//     return sent ? 'Sent' : 'Not Sent';
+//   }
+
+//   /**
+//    * Get service image
+//    */
+//   getServiceImage(image: string | undefined): string {
+//     if (!image || image === 'default-service.jpg') {
+//       return '/images/default-service.jpg';
+//     }
+//     return environment.imageUrl + image;
+//   }
+
+//   /**
+//    * Get user name from populated or direct field
+//    */
+//   getUserName(log: PaymentLog): string {
+//     if (typeof log.userId === 'object' && log.userId?.fullName) {
+//       return log.userId.fullName;
+//     }
+//     return log.fullName || 'Unknown User';
+//   }
+
+//   /**
+//    * Get user email from populated or direct field
+//    */
+//   getUserEmail(log: PaymentLog): string {
+//     if (typeof log.userId === 'object' && log.userId?.email) {
+//       return log.userId.email;
+//     }
+//     return log.email || '';
+//   }
+
+//   /**
+//    * Get user phone from populated or direct field
+//    */
+//   getUserPhone(log: PaymentLog): string {
+//     if (typeof log.userId === 'object' && log.userId?.phone) {
+//       return log.userId.phone;
+//     }
+//     return log.phone || '';
+//   }
+
+//   /**
+//    * Get service title from populated or direct field
+//    */
+//   getServiceTitle(log: PaymentLog): string {
+//     if (typeof log.serviceId === 'object' && log.serviceId?.title) {
+//       return log.serviceId.title;
+//     }
+//     return log.serviceTitle || 'Unknown Service';
+//   }
+// }
+
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { PaymentService } from '../../../core/services/transcation.service';
-import { Transaction, PaginatedTransactionResponse, User, Service } from '../../../core/interfaces/transcation.interface';
+import { PaymentLogsService } from '../../../core/services/payment-logs.service';
+import { PaymentLog, PaymentLogDetail, PaginatedPaymentLogResponse } from '../../../core/interfaces/payment-logs.interface';
 import { swalHelper } from '../../../core/constants/swal-helper';
 import { SidebarService } from '../../../core/services/sidebar.service';
-import { ThemeService } from '../../../core/services/theme.service';
-import { Theme } from '../../../core/interfaces/sidebar.interface';
 import { environment } from '../../../../env/env.local';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 
-type PaymentStatus = 'pending' | 'success' | 'failed' | 'refunded';
-
 @Component({
-  selector: 'app-transcation',
+  selector: 'app-payment-logs',
   standalone: true,
   imports: [
     CommonModule,
@@ -28,32 +349,24 @@ type PaymentStatus = 'pending' | 'success' | 'failed' | 'refunded';
   styleUrl: './transcation.component.scss'
 })
 export class TranscationComponent implements OnInit {
-  mode: 'list' | 'preview' | 'approval' = 'list';
-  transactions: Transaction[] = [];
-  currentTransaction: Transaction | null = null;
+  mode: 'list' | 'preview' = 'list';
+  paymentLogs: PaymentLog[] = [];
+  currentPaymentLog: PaymentLogDetail | null = null;
   isLoading: boolean = false;
   isSidebarCollapsed: boolean = false;
   environment = environment;
 
-  payload: {
-    page: number;
-    limit: number;
-    status: '' | PaymentStatus;
-    userId: string;
-  } = {
+  payload = {
     page: 1,
     limit: 10,
-    status: '',
-    userId: ''
+    search: ''
   };
-  
-  totalTransactions = 0;
+
+  totalPaymentLogs = 0;
   searchTerm: string = '';
-  selectedStatus: '' | PaymentStatus = '';
-  selectedUserId: string = '';
-  
+
   paginationConfig = {
-    id: 'transactions-pagination',
+    id: 'payment-logs-pagination',
     itemsPerPage: this.payload.limit,
     currentPage: this.payload.page,
     totalItems: 0
@@ -61,249 +374,112 @@ export class TranscationComponent implements OnInit {
 
   statusOptions = [
     { label: 'All Status', value: '' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Success', value: 'success' },
-    { label: 'Failed', value: 'failed' },
-    { label: 'Refunded', value: 'refunded' }
+    { label: 'Created', value: 'created' },
+    { label: 'Partial', value: 'partial' },
+    { label: 'Paid', value: 'paid' },
+    { label: 'Failed', value: 'failed' }
   ];
 
   constructor(
-    private paymentService: PaymentService,
-    private sidebarService: SidebarService,
-    private themeService: ThemeService
+    private paymentLogsService: PaymentLogsService,
+    private sidebarService: SidebarService
   ) {}
 
   ngOnInit(): void {
-    this.loadTransactions();
+    this.loadPaymentLogs();
     this.sidebarService.isCollapsed$.subscribe((isCollapsed) => {
       this.isSidebarCollapsed = isCollapsed;
     });
   }
 
-  get currentTheme(): Theme {
-    return this.themeService.getCurrentTheme();
-  }
-
-  loadTransactions(): void {
+  /**
+   * Load all payment logs
+   */
+  loadPaymentLogs(): void {
     this.isLoading = true;
-    const requestData = {
-      page: this.payload.page,
-      limit: this.payload.limit,
-      ...(this.payload.status && { status: this.payload.status as PaymentStatus }),
-      ...(this.payload.userId && { userId: this.payload.userId })
-    };
-
-    this.paymentService.getAllPayments(requestData).subscribe({
-      next: (response: PaginatedTransactionResponse) => {
-        this.transactions = response.data?.docs || [];
-        this.totalTransactions = response.data?.totalDocs || 0;
-        this.paginationConfig.totalItems = this.totalTransactions;
+    this.paymentLogsService.getAllPaymentLogs(this.payload).subscribe({
+      next: (response: PaginatedPaymentLogResponse) => {
+        this.paymentLogs = response.data?.docs || [];
+        this.totalPaymentLogs = response.data?.totalDocs || 0;
+        this.paginationConfig.totalItems = this.totalPaymentLogs;
         this.paginationConfig.currentPage = this.payload.page;
         this.paginationConfig.itemsPerPage = this.payload.limit;
         this.isLoading = false;
       },
       error: (err) => {
-        swalHelper.messageToast(err?.message ?? 'Failed to load transactions.', 'error');
+        swalHelper.messageToast(err?.error?.message ?? 'Failed to load payment logs.', 'error');
         this.isLoading = false;
       }
     });
   }
 
-  loadApprovalPayments(): void {
-    this.isLoading = true;
-    const requestData = {
-      page: this.payload.page,
-      limit: this.payload.limit,
-      ...(this.payload.status && { status: this.payload.status as PaymentStatus })
-    };
+  /**
+   * Preview payment log details
+   */
+  previewPaymentLog(paymentLog: PaymentLog): void {
+    if (!paymentLog._id) return;
 
-    this.paymentService.getPaymentsForApproval(requestData).subscribe({
-      next: (response: PaginatedTransactionResponse) => {
-        this.transactions = response.data?.docs || [];
-        this.totalTransactions = response.data?.totalDocs || 0;
-        this.paginationConfig.totalItems = this.totalTransactions;
-        this.paginationConfig.currentPage = this.payload.page;
-        this.paginationConfig.itemsPerPage = this.payload.limit;
+    this.isLoading = true;
+    this.paymentLogsService.getPaymentLogById(paymentLog._id).subscribe({
+      next: (response) => {
+        this.currentPaymentLog = response.data as PaymentLogDetail;
+        this.mode = 'preview';
         this.isLoading = false;
       },
       error: (err) => {
-        swalHelper.messageToast(err?.message ?? 'Failed to load approval payments.', 'error');
+        swalHelper.messageToast(err?.error?.message ?? 'Failed to load payment log details.', 'error');
         this.isLoading = false;
       }
     });
   }
 
-  switchToAllPayments(): void {
+  /**
+   * Back to list
+   */
+  cancelPreview(): void {
+    this.currentPaymentLog = null;
     this.mode = 'list';
-    this.loadTransactions();
   }
 
-  switchToApprovalPayments(): void {
-    this.mode = 'approval';
-    this.loadApprovalPayments();
+  /**
+   * Search payment logs
+   */
+  onSearch(): void {
+    this.payload.search = this.searchTerm;
+    this.payload.page = 1;
+    this.paginationConfig.currentPage = 1;
+    this.loadPaymentLogs();
   }
 
+  /**
+   * Page change handler
+   */
   onPageChange(page: number): void {
     this.payload.page = page;
     this.paginationConfig.currentPage = page;
-    if (this.mode === 'approval') {
-      this.loadApprovalPayments();
-    } else {
-      this.loadTransactions();
-    }
+    this.loadPaymentLogs();
   }
 
+  /**
+   * Page size change handler
+   */
   onPageSizeChange(): void {
     this.payload.limit = this.paginationConfig.itemsPerPage;
     this.payload.page = 1;
     this.paginationConfig.currentPage = 1;
-    if (this.mode === 'approval') {
-      this.loadApprovalPayments();
-    } else {
-      this.loadTransactions();
-    }
+    this.loadPaymentLogs();
   }
 
-  onStatusChange(): void {
-    this.payload.status = this.selectedStatus;
-    this.payload.page = 1;
-    this.paginationConfig.currentPage = 1;
-    if (this.mode === 'approval') {
-      this.loadApprovalPayments();
-    } else {
-      this.loadTransactions();
-    }
-  }
-
-  previewTransaction(transaction: Transaction): void {
-    this.currentTransaction = transaction;
-    this.mode = 'preview';
-  }
-
-  async updatePaymentStatus(transaction: Transaction, status: PaymentStatus): Promise<void> {
-    const confirmation = await swalHelper.takeConfirmation(
-      'Update Payment Status',
-      `Are you sure you want to mark this payment as ${status}?`
-    );
-    
-    if (confirmation.isConfirmed) {
-      this.paymentService.updatePaymentStatus({
-        paymentId: transaction._id,
-        status: status
-      }).subscribe({
-        next: (response) => {
-          swalHelper.showToast(response.message || 'Payment status updated successfully', 'success');
-          if (this.mode === 'approval') {
-            this.loadApprovalPayments();
-          } else {
-            this.loadTransactions();
-          }
-        },
-        error: (err) => {
-          swalHelper.messageToast(err?.message ?? 'Failed to update payment status.', 'error');
-        }
-      });
-    }
-  }
-
-  async deleteTransaction(transaction: Transaction): Promise<void> {
-    const confirmation = await swalHelper.delete();
-    if (confirmation.isConfirmed && transaction._id) {
-      this.paymentService.deletePayment(transaction._id).subscribe({
-        next: (response) => {
-          swalHelper.showToast(response.message || 'Transaction deleted successfully', 'success');
-          if (this.mode === 'approval') {
-            this.loadApprovalPayments();
-          } else {
-            this.loadTransactions();
-          }
-        },
-        error: (err) => {
-          swalHelper.messageToast(err?.message ?? 'Failed to delete transaction.', 'error');
-        }
-      });
-    }
-  }
-
-  getUserProfileImage(user: User | string): string {
-    if (typeof user === 'string') return '/images/profile-avtart.png';
-    if (user.profilePic && user.profilePic !== 'default.jpg') {
-      return environment.imageUrl + user.profilePic;
-    }
-    return '/images/profile-avtart.png';
-  }
-
-  getUserName(user: User | string): string {
-    if (typeof user === 'string') return 'Unknown User';
-    return user.firstName || 'Unknown User';
-  }
-
-  getUserEmail(user: User | string): string {
-    if (typeof user === 'string') return '';
-    return user.email || '';
-  }
-
-  getServiceName(service: Service | string | undefined): string {
-    if (!service) return 'No Service';
-    if (typeof service === 'string') return 'Service ID: ' + service;
-    return service.name || 'Unknown Service';
-  }
-
-  formatDate(date: string | null): string {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  }
-
-  formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR'
-    }).format(amount);
-  }
-
-  getStatusClass(status: string): string {
-    const statusClasses: { [key: string]: string } = {
-      'pending': 'tw-bg-yellow-100 tw-text-yellow-800',
-      'success': 'tw-bg-green-100 tw-text-green-800',
-      'failed': 'tw-bg-red-100 tw-text-red-800',
-      'refunded': 'tw-bg-blue-100 tw-text-blue-800'
-    };
-    return statusClasses[status] || 'tw-bg-gray-100 tw-text-gray-800';
-  }
-
-  getStatusText(status: string): string {
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  }
-
-  getPaymentMethodDisplay(method: string): string {
-    const methodMap: { [key: string]: string } = {
-      'razorpay': 'Razorpay',
-      'imported': 'Manual Import',
-      'bank_transfer': 'Bank Transfer',
-      'cash': 'Cash',
-      'cheque': 'Cheque',
-      'upi': 'UPI'
-    };
-    return methodMap[method] || method;
-  }
-
-  cancelPreview(): void {
-    this.currentTransaction = null;
-    this.mode = this.mode === 'approval' ? 'approval' : 'list';
-  }
-
+  /**
+   * Refresh data
+   */
   refreshData(): void {
-    if (this.mode === 'approval') {
-      this.loadApprovalPayments();
-    } else {
-      this.loadTransactions();
-    }
+    this.loadPaymentLogs();
   }
 
+  /**
+   * Export to Excel
+   */
   exportToExcel(): void {
     Swal.fire({
       title: 'Preparing export...',
@@ -312,70 +488,269 @@ export class TranscationComponent implements OnInit {
         Swal.showLoading();
       }
     });
-    
-    // Fetch all transactions for export
-    const requestData = {
-      page: 1,
-      limit: 10000,
-      ...(this.payload.status && { status: this.payload.status as PaymentStatus }),
-      ...(this.payload.userId && { userId: this.payload.userId })
-    };
 
-    const apiCall = this.mode === 'approval' 
-      ? this.paymentService.getPaymentsForApproval(requestData)
-      : this.paymentService.getAllPayments(requestData);
+    this.paymentLogsService.getAllPaymentLogs({ page: 1, limit: 10000, search: this.searchTerm }).subscribe({
+      next: (response: PaginatedPaymentLogResponse) => {
+        const allPaymentLogs = response.data?.docs || [];
 
-    apiCall.subscribe({
-      next: (response: PaginatedTransactionResponse) => {
-        const allTransactions = response.data?.docs || [];
-        
-        if (allTransactions.length === 0) {
+        if (allPaymentLogs.length === 0) {
           Swal.close();
-          swalHelper.error('No transactions to export');
+          swalHelper.error('No payment logs to export');
           return;
         }
 
         try {
-          // Prepare data for Excel export
-          const excelData = allTransactions.map((transaction, index) => ({
+          const excelData = allPaymentLogs.map((log, index) => ({
             'S.No': index + 1,
-            'User Name': this.getUserName(transaction.userId),
-            'User Email': this.getUserEmail(transaction.userId),
-            'Service': this.getServiceName(transaction.serviceId),
-            'Amount': transaction.amount,
-            'Currency': transaction.currency,
-            'Pending Amount': transaction.pending_amount || 0,
-            'Payment Method': this.getPaymentMethodDisplay(transaction.paymentMethod),
-            'Status': this.getStatusText(transaction.status),
-            'Transaction Date': this.formatDate(transaction.createdAt),
-            'Razorpay Transaction ID': transaction.razorpayTransactionId || 'N/A',
-            'Details': transaction.details || 'N/A'
+            'Full Name': log.fullName,
+            'Email': log.email,
+            'Phone': log.phone,
+            'Service': log.serviceTitle,
+            'Razorpay Order ID': log.razorpayOrderId,
+            'Razorpay Payment ID': log.razorpayPaymentId || 'N/A',
+            'Total Amount': `₹${(log.totalAmount / 100).toFixed(2)}`,
+            'Paid Amount': `₹${(log.paidAmount / 100).toFixed(2)}`,
+            'Pending Amount': `₹${(log.pendingAmount / 100).toFixed(2)}`,
+            'Status': this.getStatusText(log.status),
+            'Report Generated': log.reportGenerated ? 'Yes' : 'No',
+            'Email Sent': log.emailSent ? 'Yes' : 'No',
+            'WhatsApp Sent': log.whatsappSent ? 'Yes' : 'No',
+            'Created Date': this.formatDate(log.createdAt)
           }));
 
-          // Create worksheet
           const worksheet = XLSX.utils.json_to_sheet(excelData);
-          
-          // Create workbook
           const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Payment Logs');
 
-          // Generate filename with current date
-          const fileName = `${this.mode === 'approval' ? 'Payments_For_Approval' : 'All_Transactions'}_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
-
-          // Write file
+          const fileName = `Payment_Logs_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
           XLSX.writeFile(workbook, fileName);
-          
+
           Swal.close();
-          swalHelper.showToast(`Successfully exported ${allTransactions.length} transactions to Excel`, 'success');
+          swalHelper.showToast(`Successfully exported ${allPaymentLogs.length} payment logs to Excel`, 'success');
         } catch (error) {
           Swal.close();
-          swalHelper.messageToast('Failed to export transactions to Excel', 'error');
+          swalHelper.messageToast('Failed to export payment logs to Excel', 'error');
         }
       },
       error: (err) => {
         Swal.close();
-        swalHelper.messageToast(err?.message ?? 'Failed to load transactions for export', 'error');
+        swalHelper.messageToast(err?.error?.message ?? 'Failed to load payment logs for export', 'error');
       }
     });
+  }
+
+  /**
+   * Format date
+   */
+  formatDate(date: string | Date | null | undefined): string {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  /**
+   * Format currency (convert paise to rupees)
+   */
+  formatCurrency(amount: number | undefined): string {
+    if (!amount && amount !== 0) return '₹0.00';
+    return `₹${(amount / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  /**
+   * Get status class
+   */
+  getStatusClass(status: string | undefined): string {
+    const statusClasses: { [key: string]: string } = {
+      'created': 'tw-bg-blue-100 tw-text-blue-800',
+      'partial': 'tw-bg-yellow-100 tw-text-yellow-800',
+      'paid': 'tw-bg-green-100 tw-text-green-800',
+      'failed': 'tw-bg-red-100 tw-text-red-800'
+    };
+    return statusClasses[status || ''] || 'tw-bg-gray-100 tw-text-gray-800';
+  }
+
+  /**
+   * Get status text
+   */
+  getStatusText(status: string | undefined): string {
+    if (!status) return 'Unknown';
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  /**
+   * Get delivery icon
+   */
+  getDeliveryIcon(sent: boolean | undefined): string {
+    return sent ? 'ph-check-circle tw-text-green-600' : 'ph-x-circle tw-text-red-600';
+  }
+
+  /**
+   * Get delivery text
+   */
+  getDeliveryText(sent: boolean | undefined): string {
+    return sent ? 'Sent' : 'Not Sent';
+  }
+
+  /**
+   * Get service image
+   */
+  getServiceImage(image: string | undefined): string {
+    if (!image || image === 'default-service.jpg') {
+      return '/images/default-service.jpg';
+    }
+    return environment.imageUrl + image;
+  }
+
+  /**
+   * Get user name from populated or direct field
+   */
+  getUserName(log: PaymentLog): string {
+    if (typeof log.userId === 'object' && log.userId?.fullName) {
+      return log.userId.fullName;
+    }
+    return log.fullName || 'Unknown User';
+  }
+
+  /**
+   * Get user email from populated or direct field
+   */
+  getUserEmail(log: PaymentLog): string {
+    if (typeof log.userId === 'object' && log.userId?.email) {
+      return log.userId.email;
+    }
+    return log.email || '';
+  }
+
+  /**
+   * Get user phone from populated or direct field
+   */
+  getUserPhone(log: PaymentLog): string {
+    if (typeof log.userId === 'object' && log.userId?.phone) {
+      return log.userId.phone;
+    }
+    return log.phone || '';
+  }
+
+  /**
+   * Get service title from populated or direct field
+   */
+  getServiceTitle(log: PaymentLog): string {
+    if (typeof log.serviceId === 'object' && log.serviceId?.title) {
+      return log.serviceId.title;
+    }
+    return log.serviceTitle || 'Unknown Service';
+  }
+
+  /**
+   * Check if profession field is available
+   */
+  isProfessionAvailable(user: any): boolean {
+    return user && typeof user === 'object' && 'profession' in user;
+  }
+
+  /**
+   * Get profession from user
+   */
+  getProfession(user: any): string {
+    if (user && typeof user === 'object' && 'profession' in user) {
+      return user.profession || 'N/A';
+    }
+    return 'N/A';
+  }
+
+  /**
+   * Check if date of birth is available
+   */
+  isDateOfBirthAvailable(user: any): boolean {
+    return user && typeof user === 'object' && 'dateOfBirth' in user;
+  }
+
+  /**
+   * Get date of birth from user
+   */
+  getDateOfBirth(user: any): string {
+    if (user && typeof user === 'object' && 'dateOfBirth' in user) {
+      return user.dateOfBirth || 'N/A';
+    }
+    return 'N/A';
+  }
+
+  /**
+   * Check if gender is available
+   */
+  isGenderAvailable(user: any): boolean {
+    return user && typeof user === 'object' && 'gender' in user;
+  }
+
+  /**
+   * Get gender from user
+   */
+  getGender(user: any): string {
+    if (user && typeof user === 'object' && 'gender' in user) {
+      return user.gender || 'N/A';
+    }
+    return 'N/A';
+  }
+
+  /**
+   * Check if service is an object type (not a string)
+   */
+  isServiceObjectType(service: any): boolean {
+    return service && typeof service === 'object' && 'title' in service;
+  }
+
+  /**
+   * Get service title from object
+   */
+  getServiceTitleFromObject(service: any): string {
+    if (service && typeof service === 'object' && 'title' in service) {
+      return service.title || 'Unknown Service';
+    }
+    return 'Unknown Service';
+  }
+
+  /**
+   * Get service description from object
+   */
+  getServiceDescriptionFromObject(service: any): string {
+    if (service && typeof service === 'object' && 'description' in service) {
+      return service.description || '';
+    }
+    return '';
+  }
+
+  /**
+   * Get service price from object
+   */
+  getServicePriceFromObject(service: any): number {
+    if (service && typeof service === 'object' && 'price' in service) {
+      return service.price || 0;
+    }
+    return 0;
+  }
+
+  /**
+   * Get service image from object
+   */
+  getServiceImageFromObject(service: any): string {
+    if (service && typeof service === 'object' && 'image' in service) {
+      return this.getServiceImage(service.image);
+    }
+    return '/images/default-service.jpg';
+  }
+
+  /**
+   * Get simple service title (when service is just { title: string })
+   */
+  getSimpleServiceTitle(service: any): string {
+    if (service && typeof service === 'object' && 'title' in service) {
+      return service.title || 'Unknown Service';
+    }
+    return 'Unknown Service';
   }
 }

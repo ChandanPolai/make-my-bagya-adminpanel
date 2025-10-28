@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  baseURL: 'https://ndvibe.itfuturz.in',
-  imageUrl: 'https://ndvibe.itfuturz.in/',
+  baseURL: 'http://localhost:2050',
+  imageUrl: 'http://localhost:2050/',
   route: 'admin'
 };

@@ -39,34 +39,11 @@ export class SidebarComponent implements OnInit {
       icon: 'ph ph-house',
       route: '/dashboard'
     },
-    // {
-    //   id: 'register',
-    //   label: 'Register',
-    //   icon: 'ph ph-users',
-    //   route: '/register'
-    // },
     {
       id: 'users',
       label: 'Users',
       icon: 'ph ph-users',
       route: '/users'
-    },
-    {
-      id: 'category',
-      label: 'Category',
-      icon: 'ph ph-list',
-      route: '/category'
-    },
-    {
-      id: 'subcategory',
-      label: 'Subcategory',
-      icon: 'ph ph-list-bullets',
-      route: '/subcategory'
-    },
-    { id: 'videos',
-      label: 'Videos',
-      icon: 'ph ph-video',
-      route: '/videos'
     },
     { id: 'services',
       label: 'Services',
@@ -77,11 +54,6 @@ export class SidebarComponent implements OnInit {
       label: 'Transcation',
       icon: 'ph ph-money',
       route: '/transcation'
-    },
-    { id: 'delete-acount',
-      label: 'Delete-Acount',
-      icon: 'ph ph-trash',
-      route: '/delete-acount'
     },
 
 

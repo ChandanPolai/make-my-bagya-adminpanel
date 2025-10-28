@@ -1,608 +1,496 @@
-<main [class]="'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto ' + (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')">
-  <!-- List View -->
+<main [class]="'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto tw-min-h-screen ' + (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')">
+  
+  <!-- ==================== LIST VIEW ==================== -->
   <div *ngIf="mode === 'list'" class="tw-p-4 md:tw-p-7">
+    
+    <!-- Header Section -->
     <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-justify-between tw-mb-4 tw-gap-3">
-      <h2 class="tw-text-xl tw-font-bold tw-text-gray-900 tw-uppercase">Users</h2>
+      <div>
+        <h2 class="tw-text-xl tw-font-bold tw-text-gray-900 tw-uppercase">Money Switch Users</h2>
+        <p class="tw-text-gray-600 tw-mt-1">Manage and view all Money Switch users</p>
+      </div>
       <div class="tw-flex tw-gap-2">
-        <button (click)="loadUsers()" [disabled]="isLoading"
-                class="tw-bg-gray-600 hover:tw-bg-gray-700 disabled:tw-bg-gray-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2">
+        <!-- Refresh Button -->
+        <button (click)="loadUsers()" 
+                [disabled]="isLoading"
+                class="tw-bg-gray-600 hover:tw-bg-gray-700 disabled:tw-bg-gray-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
           <i [class]="isLoading ? 'ph ph-spinner tw-animate-spin' : 'ph ph-arrow-clockwise'"></i>
           <span class="tw-hidden sm:tw-inline">Refresh</span>
         </button>
-        <button (click)="exportToExcel()" [disabled]="isLoading || users.length === 0"
-                class="tw-bg-green-600 hover:tw-bg-green-700 disabled:tw-bg-green-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2">
-          <i class="ph ph-file-csv"></i><span class="tw-hidden sm:tw-inline">Export Excel</span>
-        </button>
-        <button (click)="openBulkNotificationModal()" class="tw-bg-orange-600 hover:tw-bg-orange-700 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2">
-          <i class="ph ph-bell"></i><span class="tw-hidden sm:tw-inline">Notify</span>
-        </button>
-        <button (click)="createNew()" class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2">
-          <i class="ph ph-plus"></i><span class="tw-hidden sm:tw-inline">Create User</span>
+        
+        <!-- Export Excel Button -->
+        <button (click)="exportToExcel()" 
+                [disabled]="isLoading || users.length === 0"
+                class="tw-bg-green-600 hover:tw-bg-green-700 disabled:tw-bg-green-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+          <i class="ph ph-file-csv"></i>
+          <span class="tw-hidden sm:tw-inline">Export Excel</span>
         </button>
       </div>
     </div>
 
+    <!-- Search and Filters -->
     <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-end tw-gap-4 tw-mb-6">
-      <div class="tw-flex-1 tw-w-full"><small class="tw-font-semibold tw-block tw-mb-1">Search</small>
-        <input type="text" class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md" placeholder="Search users" [(ngModel)]="searchTerm" (input)="onSearch()">
+      <div class="tw-flex-1 tw-w-full">
+        <small class="tw-font-semibold tw-block tw-mb-1">Search</small>
+        <input type="text" 
+               class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent" 
+               placeholder="Search by name, email, or phone" 
+               [(ngModel)]="searchTerm" 
+               (input)="onSearch()">
       </div>
-      <div class="tw-w-full sm:tw-w-44"><small class="tw-font-semibold tw-block tw-mb-1">Page Size</small>
-        <ng-select [items]="[10,20,50,100]" [(ngModel)]="paginationConfig.itemsPerPage" (ngModelChange)="onPageSizeChange()">
-          <ng-template ng-option-tmp let-item="item">{{item}} per page</ng-template>
+      <div class="tw-w-full sm:tw-w-44">
+        <small class="tw-font-semibold tw-block tw-mb-1">Page Size</small>
+        <ng-select [items]="[10, 20, 50, 100]" 
+                   [(ngModel)]="paginationConfig.itemsPerPage" 
+                   (ngModelChange)="onPageSizeChange()">
+          <ng-template ng-option-tmp let-item="item">{{ item }} per page</ng-template>
         </ng-select>
       </div>
     </div>
 
+    <!-- Users Table -->
     <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
+      
+      <!-- Desktop Table View -->
       <div class="tw-hidden md:tw-block tw-overflow-x-auto">
         <table class="tw-w-full tw-border-collapse">
           <thead class="tw-bg-gray-50">
             <tr>
               <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">#</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">User</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">User Info</th>
               <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Contact</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Status</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Payment</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Delivery</th>
               <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Created</th>
               <th class="tw-px-4 tw-py-3 tw-text-center tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Actions</th>
             </tr>
           </thead>
           <tbody class="tw-divide-y tw-divide-gray-200">
-            <tr *ngIf="isLoading"><td colspan="6" class="tw-px-4 tw-py-8 tw-text-center"><div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600 tw-mx-auto"></div></td></tr>
-            <tr *ngFor="let user of users | paginate: paginationConfig; let i = index" class="hover:tw-bg-gray-50">
-              <td class="tw-px-4 tw-py-4 tw-text-sm">{{(paginationConfig.currentPage-1)*paginationConfig.itemsPerPage+i+1}}</td>
-              <td class="tw-px-4 tw-py-4">
-                <div class="tw-flex tw-items-center">
-                  <img [src]="getUserProfileImage(user)" [alt]="getDisplayName(user)" class="tw-h-10 tw-w-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-300">
-                  <div class="tw-ml-3"><div class="tw-text-sm tw-font-medium tw-text-gray-900">{{getDisplayName(user)}}</div></div>
-                </div>
-              </td>
-              <td class="tw-px-4 tw-py-4"><div class="tw-text-sm tw-text-gray-900">{{user.email||'N/A'}}</div><div class="tw-text-sm tw-text-gray-500">{{user.mobile_number||'N/A'}}</div></td>
-              <td class="tw-px-4 tw-py-4"><span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full '+getStatusClass(user.active)">{{getStatusText(user.active)}}</span></td>
-              <td class="tw-px-4 tw-py-4 tw-text-sm tw-text-gray-500">{{formatDate(user.createdAt||null)}}</td>
-              <td class="tw-px-4 tw-py-4 tw-text-center">
-                <div class="tw-flex tw-items-center tw-justify-center tw-gap-1">
-                  <button (click)="openGrantAccessModal(user)" title="Grant Access" class="tw-p-2 tw-text-purple-600 hover:tw-bg-purple-50 tw-rounded-md"><i class="ph ph-key tw-text-lg"></i></button>
-                  <button (click)="viewUserAccesses(user)" title="View Accesses" class="tw-p-2 tw-text-indigo-600 hover:tw-bg-indigo-50 tw-rounded-md"><i class="ph ph-list-checks tw-text-lg"></i></button>
-                  <button (click)="sendNotificationToUser(user)" title="Notify" class="tw-p-2 tw-text-orange-600 hover:tw-bg-orange-50 tw-rounded-md"><i class="ph ph-bell tw-text-lg"></i></button>
-                  <button (click)="previewUser(user)" title="Preview" class="tw-p-2 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md"><i class="ph ph-eye tw-text-lg"></i></button>
-                  <button (click)="editUser(user)" title="Edit" class="tw-p-2 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md"><i class="ph ph-pencil tw-text-lg"></i></button>
+            <!-- Loading State -->
+            <tr *ngIf="isLoading">
+              <td colspan="7" class="tw-px-4 tw-py-8 tw-text-center">
+                <div class="tw-flex tw-items-center tw-justify-center">
+                  <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600"></div>
+                  <span class="tw-ml-3 tw-text-gray-600">Loading users...</span>
                 </div>
               </td>
             </tr>
-            <tr *ngIf="!isLoading && users.length===0"><td colspan="6" class="tw-text-center tw-py-12"><i class="ph ph-users tw-text-6xl tw-text-gray-300"></i><p class="tw-text-gray-500 tw-mt-4">No users found</p></td></tr>
+
+            <!-- Users Data -->
+            <tr *ngFor="let user of users | paginate: paginationConfig; let i = index" 
+                class="hover:tw-bg-gray-50 tw-transition-colors">
+              <td class="tw-px-4 tw-py-4 tw-text-sm tw-text-gray-700">
+                {{ (paginationConfig.currentPage - 1) * paginationConfig.itemsPerPage + i + 1 }}
+              </td>
+              <td class="tw-px-4 tw-py-4">
+                <div>
+                  <div class="tw-text-sm tw-font-medium tw-text-gray-900">{{ user.fullName }}</div>
+                  <div class="tw-text-xs tw-text-gray-500">{{ user.profession || 'N/A' }}</div>
+                </div>
+              </td>
+              <td class="tw-px-4 tw-py-4">
+                <div class="tw-text-sm tw-text-gray-900">{{ user.email }}</div>
+                <div class="tw-text-sm tw-text-gray-500">{{ user.phone }}</div>
+              </td>
+              <td class="tw-px-4 tw-py-4">
+                <div>
+                  <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ' + getPaymentStatusClass(user.paymentStatus)">
+                    {{ getPaymentStatusText(user.paymentStatus) }}
+                  </span>
+                  <div class="tw-text-xs tw-text-gray-500 tw-mt-1">{{ formatAmount(user.amountPaid) }}</div>
+                </div>
+              </td>
+              <td class="tw-px-4 tw-py-4">
+                <div class="tw-flex tw-flex-col tw-gap-1">
+                  <div class="tw-flex tw-items-center tw-gap-1 tw-text-xs">
+                    <i [class]="'ph ' + getDeliveryIcon(user.emailSent)"></i>
+                    <span class="tw-text-gray-600">Email</span>
+                  </div>
+                  <div class="tw-flex tw-items-center tw-gap-1 tw-text-xs">
+                    <i [class]="'ph ' + getDeliveryIcon(user.whatsappSent)"></i>
+                    <span class="tw-text-gray-600">WhatsApp</span>
+                  </div>
+                </div>
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-text-sm tw-text-gray-500">
+                {{ formatDate(user.createdAt || null) }}
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-text-center">
+                <div class="tw-flex tw-items-center tw-justify-center tw-gap-1">
+                  <!-- Preview Button -->
+                  <button (click)="previewUser(user)" 
+                          title="View Details" 
+                          class="tw-p-2 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md tw-transition-colors">
+                    <i class="ph ph-eye tw-text-lg"></i>
+                  </button>
+                  
+                  <!-- Resend Email Button -->
+                  <button *ngIf="user._id" 
+                          (click)="resendEmail(user._id)" 
+                          title="Resend Email" 
+                          [disabled]="isResendingEmail"
+                          class="tw-p-2 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md tw-transition-colors disabled:tw-opacity-50 disabled:tw-cursor-not-allowed">
+                    <i [class]="isResendingEmail ? 'ph ph-spinner tw-animate-spin tw-text-lg' : 'ph ph-envelope-simple tw-text-lg'"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="!isLoading && users.length === 0">
+              <td colspan="7" class="tw-text-center tw-py-12">
+                <i class="ph ph-users tw-text-6xl tw-text-gray-300"></i>
+                <p class="tw-text-gray-500 tw-mt-4 tw-text-lg">No users found</p>
+                <p class="tw-text-gray-400 tw-text-sm tw-mt-1">Try adjusting your search criteria</p>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
 
+      <!-- Mobile Card View -->
       <div class="md:tw-hidden">
-        <div *ngFor="let user of users | paginate: paginationConfig" class="tw-border-b tw-p-4">
-          <div class="tw-flex tw-items-start tw-gap-3">
-            <img [src]="getUserProfileImage(user)" class="tw-h-12 tw-w-12 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-300">
-            <div class="tw-flex-1">
-              <p class="tw-font-medium tw-text-gray-900">{{getDisplayName(user)}}</p>
-              <p class="tw-text-sm tw-text-gray-500">{{user.email||user.mobile_number}}</p>
-              <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full tw-mt-1 '+getStatusClass(user.active)">{{getStatusText(user.active)}}</span>
-              <div class="tw-flex tw-gap-1 tw-mt-2">
-                <button (click)="openGrantAccessModal(user)" class="tw-p-1.5 tw-text-purple-600 hover:tw-bg-purple-50 tw-rounded-md"><i class="ph ph-key"></i></button>
-                <button (click)="viewUserAccesses(user)" class="tw-p-1.5 tw-text-indigo-600 hover:tw-bg-indigo-50 tw-rounded-md"><i class="ph ph-list-checks"></i></button>
-                <button (click)="sendNotificationToUser(user)" class="tw-p-1.5 tw-text-orange-600 hover:tw-bg-orange-50 tw-rounded-md"><i class="ph ph-bell"></i></button>
-                <button (click)="previewUser(user)" class="tw-p-1.5 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md"><i class="ph ph-eye"></i></button>
-                <button (click)="editUser(user)" class="tw-p-1.5 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md"><i class="ph ph-pencil"></i></button>
-              </div>
+        <div *ngFor="let user of users | paginate: paginationConfig" 
+             class="tw-border-b tw-p-4 hover:tw-bg-gray-50 tw-transition-colors">
+          <div class="tw-flex tw-flex-col tw-gap-3">
+            <div>
+              <p class="tw-font-semibold tw-text-gray-900">{{ user.fullName }}</p>
+              <p class="tw-text-sm tw-text-gray-500">{{ user.profession || 'N/A' }}</p>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tw-mt-6 tw-flex tw-justify-center" *ngIf="totalUsers>0">
-      <pagination-controls [id]="'users-pagination'" (pageChange)="onPageChange($event)" [maxSize]="5" [directionLinks]="true" previousLabel="Previous" nextLabel="Next"></pagination-controls>
-    </div>
-  </div>
-
-  <!-- Grant Access Modal -->
-  <div *ngIf="mode==='grant-access'&&selectedUserForAccess" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-md tw-max-h-[95vh] tw-overflow-hidden">
-      <div class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-bg-purple-50">
-        <div><h3 class="tw-text-xl tw-font-bold tw-text-purple-900">Grant Access</h3><p class="tw-text-sm tw-text-purple-700">Give manual access to {{getDisplayName(selectedUserForAccess)}}</p></div>
-        <button (click)="cancelGrantAccess()" class="tw-text-gray-400 hover:tw-text-gray-600"><i class="ph ph-x tw-text-2xl"></i></button>
-      </div>
-      <div class="tw-p-6 tw-overflow-y-auto tw-max-h-[calc(95vh-12rem)]">
-        <form [formGroup]="grantAccessForm" (ngSubmit)="submitGrantAccess()" class="tw-space-y-4">
-          <div class="tw-text-center tw-mb-4">
-            <img [src]="getUserProfileImage(selectedUserForAccess)" class="tw-w-16 tw-h-16 tw-rounded-full tw-object-cover tw-mx-auto tw-border-4 tw-border-gray-200">
-            <h4 class="tw-text-lg tw-font-semibold tw-mt-2">{{getDisplayName(selectedUserForAccess)}}</h4>
-          </div>
-          <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Select Service <code class="tw-text-red-500">*</code></label>
-            <ng-select formControlName="serviceId" placeholder="Choose service" [class.tw-border-red-500]="isGrantAccessFieldInvalid('serviceId')">
-              <ng-option *ngFor="let service of allServices" [value]="service._id">{{service.name}} - {{service.accessType}}</ng-option>
-            </ng-select>
-            <p *ngIf="isGrantAccessFieldInvalid('serviceId')" class="tw-text-red-500 tw-text-sm tw-mt-1">{{getGrantAccessFieldError('serviceId')}}</p>
-          </div>
-          <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Valid From <code class="tw-text-red-500">*</code></label>
-            <input formControlName="validity_from" bsDatepicker [bsConfig]="{dateInputFormat:'DD/MM/YYYY',containerClass:'theme-dark-blue'}" class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md" [class.tw-border-red-500]="isGrantAccessFieldInvalid('validity_from')">
-            <p *ngIf="isGrantAccessFieldInvalid('validity_from')" class="tw-text-red-500 tw-text-sm tw-mt-1">{{getGrantAccessFieldError('validity_from')}}</p>
-          </div>
-          <div>
-            <div class="tw-flex tw-items-center tw-mb-2">
-              <input formControlName="isLifetime" type="checkbox" id="lifetime" class="tw-w-4 tw-h-4 tw-text-purple-600 tw-border-gray-300 tw-rounded">
-              <label for="lifetime" class="tw-ml-2 tw-text-sm tw-font-medium tw-text-gray-700">Grant Lifetime Access (No Expiry)</label>
+            <div class="tw-text-sm">
+              <p class="tw-text-gray-600">{{ user.email }}</p>
+              <p class="tw-text-gray-600">{{ user.phone }}</p>
             </div>
-          </div>
-          <div *ngIf="!grantAccessForm.get('isLifetime')?.value">
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Valid To <code class="tw-text-red-500">*</code></label>
-            <input formControlName="validity_to" bsDatepicker [bsConfig]="{dateInputFormat:'DD/MM/YYYY',containerClass:'theme-dark-blue'}" class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md" [class.tw-border-red-500]="isGrantAccessFieldInvalid('validity_to')">
-            <p *ngIf="isGrantAccessFieldInvalid('validity_to')" class="tw-text-red-500 tw-text-sm tw-mt-1">{{getGrantAccessFieldError('validity_to')}}</p>
-          </div>
-        </form>
-      </div>
-      <div class="tw-flex tw-justify-end tw-gap-3 tw-p-6 tw-border-t tw-bg-gray-50">
-        <button (click)="cancelGrantAccess()" class="tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md">Cancel</button>
-        <button (click)="submitGrantAccess()" [disabled]="grantAccessForm.invalid||isAccessLoading" class="tw-bg-purple-600 hover:tw-bg-purple-700 disabled:tw-bg-purple-300 tw-text-white tw-px-6 tw-py-2 tw-rounded-md"><span *ngIf="!isAccessLoading">Grant Access</span><span *ngIf="isAccessLoading">Granting...</span></button>
-      </div>
-    </div>
-  </div>
-
-  <!-- View Accesses Modal -->
-  <div *ngIf="mode==='view-accesses'&&selectedUserForAccess" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-3xl tw-max-h-[95vh] tw-overflow-hidden">
-      <div class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-bg-indigo-50">
-        <div><h3 class="tw-text-xl tw-font-bold tw-text-indigo-900">User Accesses</h3><p class="tw-text-sm tw-text-indigo-700">Manual accesses for {{getDisplayName(selectedUserForAccess)}}</p></div>
-        <button (click)="cancelGrantAccess()" class="tw-text-gray-400 hover:tw-text-gray-600"><i class="ph ph-x tw-text-2xl"></i></button>
-      </div>
-      <div class="tw-p-6 tw-overflow-y-auto tw-max-h-[calc(95vh-12rem)]">
-        <div *ngIf="isAccessLoading" class="tw-text-center tw-py-12"><div class="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-indigo-600 tw-mx-auto"></div><p class="tw-mt-4 tw-text-gray-500">Loading accesses...</p></div>
-        <div *ngIf="!isAccessLoading&&userManualAccesses.length===0" class="tw-text-center tw-py-12"><i class="ph ph-key tw-text-6xl tw-text-gray-300"></i><p class="tw-text-gray-500 tw-mt-4">No manual accesses granted yet</p><button (click)="openGrantAccessModal(selectedUserForAccess)" class="tw-mt-4 tw-bg-purple-600 hover:tw-bg-purple-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md">Grant Access Now</button></div>
-        <div *ngIf="!isAccessLoading&&userManualAccesses.length>0" class="tw-space-y-4">
-          <div *ngFor="let access of userManualAccesses" class="tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 hover:tw-shadow-md tw-transition-shadow">
-            <div class="tw-flex tw-items-start tw-justify-between">
-              <div class="tw-flex-1">
-                <h4 class="tw-font-semibold tw-text-gray-900 tw-text-lg">{{access.service.name}}</h4>
-                <p class="tw-text-sm tw-text-gray-600 tw-mt-1">{{access.service.description||'No description'}}</p>
-                <div class="tw-mt-3 tw-space-y-1">
-                  <div class="tw-flex tw-items-center tw-text-sm"><i class="ph ph-calendar tw-text-gray-400 tw-mr-2"></i><span class="tw-text-gray-600">From:</span><span class="tw-ml-2 tw-font-medium">{{formatAccessDate(access.validity_from)}}</span></div>
-                  <div class="tw-flex tw-items-center tw-text-sm"><i class="ph ph-calendar-check tw-text-gray-400 tw-mr-2"></i><span class="tw-text-gray-600">To:</span><span class="tw-ml-2 tw-font-medium" [class.tw-text-green-600]="access.isLifetime">{{formatAccessDate(access.validity_to)}}</span></div>
-                  <div class="tw-flex tw-items-center tw-text-sm"><i class="ph ph-clock tw-text-gray-400 tw-mr-2"></i><span class="tw-text-gray-600">Granted:</span><span class="tw-ml-2">{{formatAccessDate(access.grantedAt)}}</span></div>
-                </div>
-              </div>
-              <div class="tw-ml-4 tw-flex tw-flex-col tw-items-end tw-gap-2">
-                <span [class]="'tw-inline-flex tw-px-3 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full '+getAccessStatusClass(access.isActive)">{{getAccessStatusText(access.isActive)}}</span>
-                <button (click)="revokeAccess(access.transactionId)" *ngIf="access.isActive" class="tw-text-red-600 hover:tw-bg-red-50 tw-px-3 tw-py-1 tw-rounded-md tw-text-sm tw-font-medium">Revoke</button>
-              </div>
+            <div class="tw-flex tw-items-center tw-gap-2">
+              <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ' + getPaymentStatusClass(user.paymentStatus)">
+                {{ getPaymentStatusText(user.paymentStatus) }}
+              </span>
+              <span class="tw-text-sm tw-text-gray-600">{{ formatAmount(user.amountPaid) }}</span>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="tw-flex tw-justify-between tw-items-center tw-p-6 tw-border-t tw-bg-gray-50">
-        <button (click)="openGrantAccessModal(selectedUserForAccess)" class="tw-bg-purple-600 hover:tw-bg-purple-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md"><i class="ph ph-plus tw-mr-2"></i>Grant New Access</button>
-        <button (click)="cancelGrantAccess()" class="tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md">Close</button>
-      </div>
-    </div>
-  </div>
-
- <!-- Create/Edit User Modal -->
-<div *ngIf="mode === 'create' || mode === 'edit'"
-     class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
-  <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-lg tw-max-h-[95vh] tw-overflow-hidden">
-    <div class="tw-flex tw-items-center tw-justify-between tw-p-4 sm:tw-p-6 tw-border-b tw-bg-blue-50">
-      <div>
-        <h3 class="tw-text-lg sm:tw-text-xl tw-font-bold tw-text-blue-900">
-          {{ mode === 'create' ? 'Create New User' : 'Edit User' }}
-        </h3>
-        <p class="tw-text-sm tw-text-blue-700">
-          {{ mode === 'create' ? 'Fill in the details to create a new user' : 'Update user information' }}
-        </p>
-      </div>
-      <button (click)="cancelForm()"
-              class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-xl sm:tw-text-2xl tw-transition-colors tw-p-1">
-        <i class="ph ph-x"></i>
-      </button>
-    </div>
-    <div class="tw-p-4 sm:tw-p-6 tw-overflow-y-auto tw-max-h-[75vh]">
-      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="tw-space-y-4">
-        <div class="tw-text-center">
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            Profile Picture
-            <span class="tw-text-gray-500 tw-text-xs">[Max 5MB, JPG/PNG only]</span>
-          </label>
-          <div class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-md tw-p-4 tw-text-center hover:tw-border-blue-400 tw-transition-colors"
-               [class.tw-border-blue-400]="selectedFile"
-               [class.tw-border-red-400]="fileError"
-               (dragover)="onDragOver($event)"
-               (dragleave)="onDragLeave($event)"
-               (drop)="onDrop($event)">
-            <input #fileInput type="file" (change)="onFileSelected($event)"
-                   accept="image/jpeg,image/jpg,image/png" class="tw-hidden">
-            <div *ngIf="!selectedFile">
-              <i class="ph ph-image tw-text-2xl sm:tw-text-3xl tw-text-gray-400 tw-mb-2"></i>
-              <p class="tw-text-sm tw-text-gray-600">
-                Drag & drop image here or
-                <button type="button" (click)="fileInput.click()"
-                        class="tw-text-blue-500 hover:tw-text-blue-700">browse file</button>
-              </p>
-              <p class="tw-text-xs tw-text-gray-500 tw-mt-1">Maximum file size: 5MB</p>
-            </div>
-            <div *ngIf="selectedFile" class="tw-space-y-3">
-              <div class="tw-flex tw-justify-center">
-                <img [src]="getImagePreviewUrl()" [alt]="selectedFile.name"
-                     class="tw-w-16 tw-h-16 sm:tw-w-20 sm:tw-h-20 tw-object-cover tw-rounded-full tw-border-2 tw-border-gray-300">
-              </div>
-              <div class="tw-flex tw-items-center tw-justify-center">
-                <i class="ph ph-image tw-text-blue-500 tw-text-lg tw-mr-2"></i>
-                <div class="tw-text-center">
-                  <p class="tw-text-sm tw-font-medium tw-text-gray-900 tw-truncate">{{ selectedFile.name }}</p>
-                  <p class="tw-text-xs tw-text-gray-500">{{ getFileSize(selectedFile.size) }}</p>
-                </div>
-                <button type="button" (click)="removeSelectedFile()"
-                        class="tw-ml-3 tw-text-red-500 hover:tw-text-red-700">
-                  <i class="ph ph-x-circle tw-text-lg"></i>
-                </button>
-              </div>
-              <button type="button" (click)="fileInput.click()"
-                      class="tw-text-blue-500 hover:tw-text-blue-700 tw-text-sm tw-underline">
-                Change Image
+            <div class="tw-flex tw-gap-2 tw-mt-2">
+              <button (click)="previewUser(user)" 
+                      class="tw-flex-1 tw-p-2 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-colors">
+                <i class="ph ph-eye"></i>
+                <span class="tw-text-sm">View</span>
+              </button>
+              <button *ngIf="user._id" 
+                      (click)="resendEmail(user._id)" 
+                      [disabled]="isResendingEmail"
+                      class="tw-flex-1 tw-p-2 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-colors disabled:tw-opacity-50">
+                <i [class]="isResendingEmail ? 'ph ph-spinner tw-animate-spin' : 'ph ph-envelope-simple'"></i>
+                <span class="tw-text-sm">Resend</span>
               </button>
             </div>
           </div>
-          <p *ngIf="fileError" class="tw-text-red-500 tw-text-sm tw-mt-1">{{ fileError }}</p>
-        </div>
-        <div>
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            First Name <code class="tw-text-red-500">*</code>
-          </label>
-          <input formControlName="firstName" type="text" placeholder="Enter first name"
-                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
-                 [class.tw-border-red-500]="isFieldInvalid('firstName')">
-          <p *ngIf="isFieldInvalid('firstName')" class="tw-text-red-500 tw-text-sm tw-mt-1">
-            {{ getFieldError('firstName') }}
-          </p>
-        </div>
-        <div>
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            Last Name
-          </label>
-          <input formControlName="lastName" type="text" placeholder="Enter last name"
-                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500">
-        </div>
-        <div>
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            Email Address
-          </label>
-          <input formControlName="email" type="email" placeholder="Enter email address"
-                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
-                 [class.tw-border-red-500]="isFieldInvalid('email')">
-          <p *ngIf="isFieldInvalid('email')" class="tw-text-red-500 tw-text-sm tw-mt-1">
-            {{ getFieldError('email') }}
-          </p>
-        </div>
-        <div>
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            WhatsApp Number <code class="tw-text-red-500">*</code>
-          </label>
-          <input formControlName="mobile_number" type="tel" placeholder="Enter 10-digit WhatsApp number"
-                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
-                 [class.tw-border-red-500]="isFieldInvalid('mobile_number')">
-          <p *ngIf="isFieldInvalid('mobile_number')" class="tw-text-red-500 tw-text-sm tw-mt-1">
-            {{ getFieldError('mobile_number') }}
-          </p>
-        </div>
-        <div>
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            Date of Birth
-          </label>
-          <input formControlName="date_of_birth" bsDatepicker
-                 [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue', adaptivePosition: true }"
-                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
-                 placeholder="Select date of birth">
-        </div>
-        <div>
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            City
-          </label>
-          <input formControlName="city" type="text" placeholder="Enter city"
-                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500">
-        </div>
-        <div>
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-            Company Name
-          </label>
-          <input formControlName="company_name" type="text" placeholder="Enter company name"
-                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500">
-        </div>
-        <!-- Add Checkboxes for Edit Mode Only -->
-        <div *ngIf="mode === 'edit'" class="tw-flex tw-flex-col tw-gap-4">
-          <div class="tw-flex tw-items-center">
-            <input formControlName="active" type="checkbox" id="active"
-                   class="tw-w-4 tw-h-4 tw-text-blue-600 tw-border-gray-300 tw-rounded focus:tw-ring-blue-500 focus:tw-ring-2">
-            <label for="active" class="tw-ml-2 tw-text-sm tw-font-medium tw-text-gray-700">
-              Active
-            </label>
-          </div>
-          <div class="tw-flex tw-items-center">
-            <input formControlName="isDeleted" type="checkbox" id="isDeleted"
-                   class="tw-w-4 tw-h-4 tw-text-blue-600 tw-border-gray-300 tw-rounded focus:tw-ring-blue-500 focus:tw-ring-2">
-            <label for="isDeleted" class="tw-ml-2 tw-text-sm tw-font-medium tw-text-gray-700">
-              isDeleted
-            </label>
-          </div>
-        </div>
-        <div class="tw-flex tw-flex-col sm:tw-flex-row tw-justify-between tw-items-start sm:tw-items-center tw-p-4 tw-bg-gray-50 tw-gap-3">
-          <div class="tw-flex tw-gap-3 tw-w-full sm:tw-w-auto">
-            <button type="button" (click)="cancelForm()"
-                    class="tw-flex-1 sm:tw-flex-none tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-font-medium tw-py-2 tw-px-4 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
-              <i class="ph ph-x tw-text-sm"></i>
-              Cancel
-            </button>
-            <button type="button" (click)="onSubmit()" [disabled]="userForm.invalid || isLoading"
-                    class="tw-flex-1 sm:tw-flex-none tw-bg-blue-600 hover:tw-bg-blue-700 disabled:tw-bg-blue-300 disabled:tw-cursor-not-allowed tw-text-white tw-font-medium tw-py-2 tw-px-6 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2 tw-min-w-[120px]">
-              <i *ngIf="!isLoading" class="ph ph-check tw-text-sm"></i>
-              <div *ngIf="isLoading"
-                   class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></div>
-              <span>{{ isLoading ? 'Saving...' : (mode === 'create' ? 'Create User' : 'Update User') }}</span>
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-  <!-- Preview User Modal -->
-  <div *ngIf="mode === 'preview' && currentUser" 
-       class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-lg tw-max-h-[95vh] tw-overflow-hidden">
-      <div class="tw-flex tw-items-center tw-justify-between tw-p-4 sm:tw-p-6 tw-border-b tw-bg-green-50">
-        <div>
-          <h3 class="tw-text-lg sm:tw-text-xl tw-font-bold tw-text-green-900">User Details</h3>
-          <p class="tw-text-sm tw-text-green-700">Complete user information</p>
-        </div>
-        <button (click)="cancelForm()" 
-                class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-xl sm:tw-text-2xl tw-transition-colors tw-p-1">
-          <i class="ph ph-x"></i>
-        </button>
-      </div>
-      <div class="tw-p-4 sm:tw-p-6 tw-overflow-y-auto tw-max-h-[calc(95vh-12rem)]">
-        <div class="tw-text-center tw-mb-6">
-          <img [src]="getUserProfileImage(currentUser)" [alt]="getDisplayName(currentUser)"
-               class="tw-w-20 tw-h-20 sm:tw-w-24 sm:tw-h-24 tw-rounded-full tw-object-cover tw-mx-auto tw-border-4 tw-border-gray-200">
-          <h4 class="tw-text-lg sm:tw-text-xl tw-font-semibold tw-text-gray-900 tw-mt-3">{{ getDisplayName(currentUser) }}</h4>
-          <span [class]="'tw-inline-flex tw-px-3 tw-py-1 tw-text-sm tw-font-semibold tw-rounded-full tw-mt-2 ' + getStatusClass(currentUser.active)">
-            {{ getStatusText(currentUser.active) }}
-          </span>
-        </div>
-        <div class="tw-space-y-4">
-          <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4">
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">Email</label>
-              <p class="tw-text-sm tw-text-gray-900 tw-break-all">{{ currentUser.email || 'N/A' }}</p>
-            </div>
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">WhatsApp Number</label>
-              <p class="tw-text-sm tw-text-gray-900">{{ currentUser.mobile_number || 'N/A' }}</p>
-            </div>
-          </div>
-          <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4">
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">Date of Birth</label>
-              <p class="tw-text-sm tw-text-gray-900">{{ formatDate(currentUser.date_of_birth ?? null) }}</p>
-            </div>
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">User ID</label>
-              <p class="tw-text-sm tw-text-gray-900 tw-font-mono tw-break-all">{{ currentUser._id }}</p>
-            </div>
-          </div>
-          <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4">
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">City</label>
-              <p class="tw-text-sm tw-text-gray-900">{{ currentUser.city || 'N/A' }}</p>
-            </div>
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">Company</label>
-              <p class="tw-text-sm tw-text-gray-900">{{ currentUser.company_name || 'N/A' }}</p>
-            </div>
-          </div>
-          <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4">
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">Created Date</label>
-              <p class="tw-text-sm tw-text-gray-900">{{ formatDate(currentUser.createdAt || null) }}</p>
-            </div>
-            <div>
-              <label class="tw-text-sm tw-font-medium tw-text-gray-500">Last Updated</label>
-              <p class="tw-text-sm tw-text-gray-900">{{ formatDate(currentUser.updatedAt || null) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="tw-flex tw-flex-col sm:tw-flex-row tw-justify-end tw-items-center tw-p-4 sm:tw-p-6 tw-border-t tw-bg-gray-50 tw-gap-3">
-        <div class="tw-flex tw-gap-3 tw-w-full sm:tw-w-auto">
-          <button (click)="cancelForm()"
-                  class="tw-flex-1 sm:tw-flex-none tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
-            <i class="ph ph-x"></i>
-            Close
-          </button>
-          <button (click)="editUser(currentUser)"
-                  class="tw-flex-1 sm:tw-flex-none tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-6 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
-            <i class="ph ph-pencil"></i>
-            Edit User
-          </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Single User Notification Modal -->
-  <div *ngIf="mode === 'single-notification' && selectedUserForNotification" 
-       class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-md tw-max-h-[95vh] tw-overflow-hidden">
-      <div class="tw-flex tw-items-center tw-justify-between tw-p-4 sm:tw-p-6 tw-border-b tw-bg-orange-50">
-        <div>
-          <h3 class="tw-text-lg sm:tw-text-xl tw-font-bold tw-text-orange-900">Send Notification</h3>
-          <p class="tw-text-sm tw-text-orange-700">Send notification to {{ getDisplayName(selectedUserForNotification) }}</p>
-        </div>
-        <button (click)="cancelNotification()" 
-                class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-xl sm:tw-text-2xl tw-transition-colors tw-p-1">
-          <i class="ph ph-x"></i>
-        </button>
-      </div>
-      <div class="tw-p-4 sm:tw-p-6 tw-overflow-y-auto tw-max-h-[calc(95vh-12rem)]">
-        <form [formGroup]="notificationForm" (ngSubmit)="sendSingleNotification()" class="tw-space-y-4">
-          <div class="tw-text-center tw-mb-4">
-            <img [src]="getUserProfileImage(selectedUserForNotification)" [alt]="getDisplayName(selectedUserForNotification)"
-                 class="tw-w-16 tw-h-16 tw-rounded-full tw-object-cover tw-mx-auto tw-border-4 tw-border-gray-200">
-            <h4 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mt-2">{{ getDisplayName(selectedUserForNotification) }}</h4>
-          </div>
-          <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-              Notification Type <code class="tw-text-red-500">*</code>
-            </label>
-            <ng-select formControlName="type" placeholder="Select notification type"
-                       class="tw-w-full" [class.tw-border-red-500]="isNotificationFieldInvalid('type')">
-              <ng-option value="general">General</ng-option>
-              <ng-option value="content">Content</ng-option>
-              <ng-option value="subscription">Subscription</ng-option>
-            </ng-select>
-            <p *ngIf="isNotificationFieldInvalid('type')" class="tw-text-red-500 tw-text-sm tw-mt-1">
-              {{ getNotificationFieldError('type') }}
-            </p>
-          </div>
-          <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-              Message <code class="tw-text-red-500">*</code>
-            </label>
-            <textarea formControlName="message" rows="4" placeholder="Enter your notification message"
-                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-orange-500 tw-resize-none"
-                      [class.tw-border-red-500]="isNotificationFieldInvalid('message')"></textarea>
-            <p *ngIf="isNotificationFieldInvalid('message')" class="tw-text-red-500 tw-text-sm tw-mt-1">
-              {{ getNotificationFieldError('message') }}
-            </p>
-          </div>
-        </form>
-      </div>
-      <div class="tw-flex tw-flex-col sm:tw-flex-row tw-justify-end tw-items-center tw-p-4 sm:tw-p-6 tw-border-t tw-bg-gray-50 tw-gap-3">
-        <div class="tw-flex tw-gap-3 tw-w-full sm:tw-w-auto">
-          <button (click)="cancelNotification()"
-                  class="tw-flex-1 sm:tw-flex-none tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
-            <i class="ph ph-x"></i>
-            Cancel
-          </button>
-          <button (click)="sendSingleNotification()" [disabled]="notificationForm.invalid || isNotificationLoading"
-                  class="tw-flex-1 sm:tw-flex-none tw-bg-orange-600 hover:tw-bg-orange-700 disabled:tw-bg-orange-300 disabled:tw-cursor-not-allowed tw-text-white tw-px-6 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2 tw-min-w-[120px]">
-            <i *ngIf="!isNotificationLoading" class="ph ph-paper-plane-tilt"></i>
-            <div *ngIf="isNotificationLoading"
-                 class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></div>
-            <span>{{ isNotificationLoading ? 'Sending...' : 'Send' }}</span>
-          </button>
-        </div>
-      </div>
+    <!-- Pagination -->
+    <div class="tw-mt-6 tw-flex tw-justify-center" *ngIf="totalUsers > 0">
+      <pagination-controls [id]="paginationConfig.id" 
+                          (pageChange)="onPageChange($event)" 
+                          [maxSize]="5" 
+                          [directionLinks]="true" 
+                          previousLabel="Previous" 
+                          nextLabel="Next">
+      </pagination-controls>
     </div>
   </div>
 
-  <!-- Bulk Notification Modal -->
-  <div *ngIf="mode === 'bulk-notification'" 
-       class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-2xl tw-max-h-[95vh] tw-overflow-hidden">
-      <div class="tw-flex tw-items-center tw-justify-between tw-p-4 sm:tw-p-6 tw-border-b tw-bg-orange-50">
-        <div>
-          <h3 class="tw-text-lg sm:tw-text-xl tw-font-bold tw-text-orange-900">Send Bulk Notification</h3>
-          <p class="tw-text-sm tw-text-orange-700">Select users and send notification to multiple users</p>
-        </div>
-        <button (click)="cancelNotification()" 
-                class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-xl sm:tw-text-2xl tw-transition-colors tw-p-1">
-          <i class="ph ph-x"></i>
+  <!-- ==================== PREVIEW VIEW ==================== -->
+  <div *ngIf="mode === 'preview' && currentUser" class="tw-p-4 md:tw-p-7">
+    
+    <!-- Header Section -->
+    <div class="tw-flex tw-items-center tw-justify-between tw-mb-6">
+      <div class="tw-flex tw-items-center tw-gap-3">
+        <button (click)="backToList()" 
+                class="tw-p-2 tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded-md tw-transition-colors">
+          <i class="ph ph-arrow-left tw-text-xl"></i>
         </button>
+        <div>
+          <h2 class="tw-text-xl tw-font-bold tw-text-gray-900">User Details</h2>
+          <p class="tw-text-gray-600 tw-text-sm">Complete information about the user</p>
+        </div>
       </div>
-      <div class="tw-p-4 sm:tw-p-6 tw-overflow-y-auto tw-max-h-[calc(95vh-12rem)]">
-        <form [formGroup]="notificationForm" (ngSubmit)="sendBulkNotification()" class="tw-space-y-4">
-          <!-- User Selection -->
-          <div>
-            <div class="tw-flex tw-items-center tw-justify-between tw-mb-3">
-              <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
-                Select Users <code class="tw-text-red-500">*</code>
-              </label>
-              <div class="tw-flex tw-gap-2">
-                <button type="button" (click)="selectAllUsers()" 
-                        class="tw-text-sm tw-text-blue-600 hover:tw-text-blue-800 tw-underline">
-                  Select All
-                </button>
-                <span class="tw-text-gray-300">|</span>
-                <button type="button" (click)="deselectAllUsers()" 
-                        class="tw-text-sm tw-text-red-600 hover:tw-text-red-800 tw-underline">
-                  Deselect All
-                </button>
-              </div>
-            </div>
-            <div class="tw-border tw-border-gray-300 tw-rounded-md tw-max-h-60 tw-overflow-y-auto">
-              <div *ngFor="let user of allUsersForNotification; let i = index" 
-                   class="tw-flex tw-items-center tw-p-3 tw-border-b tw-border-gray-200 last:tw-border-b-0 hover:tw-bg-gray-50">
-                <input type="checkbox" 
-                       [id]="'user-' + i" 
-                       [(ngModel)]="user.selected"
-                       [ngModelOptions]="{standalone: true}"
-                       class="tw-w-4 tw-h-4 tw-text-orange-600 tw-border-gray-300 tw-rounded focus:tw-ring-orange-500">
-                <label [for]="'user-' + i" class="tw-ml-3 tw-flex tw-items-center tw-flex-1 tw-cursor-pointer">
-                  <img [src]="getUserProfileImage(user)" [alt]="getDisplayName(user)"
-                       class="tw-w-8 tw-h-8 tw-rounded-full tw-object-cover tw-border tw-border-gray-300">
-                  <div class="tw-ml-3 tw-flex-1">
-                    <p class="tw-text-sm tw-font-medium tw-text-gray-900">{{ getDisplayName(user) }}</p>
-                    <p class="tw-text-xs tw-text-gray-500">{{ user.email || user.mobile_number }}</p>
-                  </div>
-                  <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ' + getStatusClass(user.active)">
-                    {{ getStatusText(user.active) }}
-                  </span>
-                </label>
-              </div>
-            </div>
-            <p class="tw-text-sm tw-text-gray-600 tw-mt-2">
-              Selected: {{ getSelectedUsersCount() }} / {{ allUsersForNotification.length }}
-            </p>
-            <p *ngIf="getSelectedUsersCount() === 0" class="tw-text-red-500 tw-text-sm tw-mt-1">
-              Please select at least one user
-            </p>
-          </div>
+      <button *ngIf="currentUser.userId" 
+              (click)="resendEmail(currentUser.userId)" 
+              [disabled]="isResendingEmail"
+              class="tw-bg-green-600 hover:tw-bg-green-700 disabled:tw-bg-green-400 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+        <i [class]="isResendingEmail ? 'ph ph-spinner tw-animate-spin' : 'ph ph-envelope-simple'"></i>
+        <span>{{ isResendingEmail ? 'Sending...' : 'Resend Email' }}</span>
+      </button>
+    </div>
 
+    <!-- User Details Grid -->
+    <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
+      
+      <!-- Personal Information Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-user tw-text-blue-600 tw-mr-2"></i>
+          Personal Information
+        </h3>
+        <div class="tw-space-y-3">
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-              Notification Type <code class="tw-text-red-500">*</code>
-            </label>
-            <ng-select formControlName="type" placeholder="Select notification type"
-                       class="tw-w-full" [class.tw-border-red-500]="isNotificationFieldInvalid('type')">
-              <ng-option value="general">General</ng-option>
-              <ng-option value="content">Content</ng-option>
-              <ng-option value="subscription">Subscription</ng-option>
-            </ng-select>
-            <p *ngIf="isNotificationFieldInvalid('type')" class="tw-text-red-500 tw-text-sm tw-mt-1">
-              {{ getNotificationFieldError('type') }}
-            </p>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Full Name</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ currentUser.fullName || 'N/A' }}</p>
           </div>
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-              Message <code class="tw-text-red-500">*</code>
-            </label>
-            <textarea formControlName="message" rows="4" placeholder="Enter your notification message"
-                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-orange-500 tw-resize-none"
-                      [class.tw-border-red-500]="isNotificationFieldInvalid('message')"></textarea>
-            <p *ngIf="isNotificationFieldInvalid('message')" class="tw-text-red-500 tw-text-sm tw-mt-1">
-              {{ getNotificationFieldError('message') }}
-            </p>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Date of Birth</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ currentUser.dateOfBirth || 'N/A' }}</p>
           </div>
-        </form>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Gender</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ currentUser.gender || 'N/A' }}</p>
+          </div>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Profession</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ currentUser.profession || 'N/A' }}</p>
+          </div>
+        </div>
       </div>
-      <div class="tw-flex tw-flex-col sm:tw-flex-row tw-justify-end tw-items-center tw-p-4 sm:tw-p-6 tw-border-t tw-bg-gray-50 tw-gap-3">
-        <div class="tw-flex tw-gap-3 tw-w-full sm:tw-w-auto">
-          <button (click)="cancelNotification()"
-                  class="tw-flex-1 sm:tw-flex-none tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
-            <i class="ph ph-x"></i>
-            Cancel
+
+      <!-- Contact Information Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-at tw-text-green-600 tw-mr-2"></i>
+          Contact Information
+        </h3>
+        <div class="tw-space-y-3">
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Email</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ currentUser.email || 'N/A' }}</p>
+          </div>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Phone</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ currentUser.phone || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Numerology Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-number-circle-one tw-text-purple-600 tw-mr-2"></i>
+          Numerology
+        </h3>
+        <div class="tw-grid tw-grid-cols-3 tw-gap-4">
+          <div class="tw-text-center tw-p-3 tw-bg-purple-50 tw-rounded-lg">
+            <p class="tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Day Number</p>
+            <p class="tw-text-2xl tw-font-bold tw-text-purple-600 tw-mt-1">
+              {{ currentUser.numerology?.dayNumber ?? 'N/A' }}
+            </p>
+          </div>
+          <div class="tw-text-center tw-p-3 tw-bg-purple-50 tw-rounded-lg">
+            <p class="tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Life Path</p>
+            <p class="tw-text-2xl tw-font-bold tw-text-purple-600 tw-mt-1">
+              {{ currentUser.numerology?.lifePathNumber ?? 'N/A' }}
+            </p>
+          </div>
+          <div class="tw-text-center tw-p-3 tw-bg-purple-50 tw-rounded-lg">
+            <p class="tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Name Number</p>
+            <p class="tw-text-2xl tw-font-bold tw-text-purple-600 tw-mt-1">
+              {{ currentUser.numerology?.nameNumber ?? 'N/A' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Money Codes Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-currency-dollar tw-text-green-600 tw-mr-2"></i>
+          Money Codes
+        </h3>
+        <div class="tw-space-y-3">
+          <div class="tw-flex tw-justify-between tw-items-center tw-p-3 tw-bg-green-50 tw-rounded-lg">
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Daily Code</span>
+            <span class="tw-font-bold tw-text-green-700">{{ currentUser.moneyCodes?.daily || 'N/A' }}</span>
+          </div>
+          <div class="tw-flex tw-justify-between tw-items-center tw-p-3 tw-bg-green-50 tw-rounded-lg">
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Wealth Code</span>
+            <span class="tw-font-bold tw-text-green-700">{{ currentUser.moneyCodes?.wealth || 'N/A' }}</span>
+          </div>
+          <div class="tw-flex tw-justify-between tw-items-center tw-p-3 tw-bg-green-50 tw-rounded-lg">
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Luxury Code</span>
+            <span class="tw-font-bold tw-text-green-700">{{ currentUser.moneyCodes?.luxury || 'N/A' }}</span>
+          </div>
+          <div class="tw-flex tw-justify-between tw-items-center tw-p-3 tw-bg-green-50 tw-rounded-lg">
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Master Code</span>
+            <span class="tw-font-bold tw-text-green-700">{{ currentUser.moneyCodes?.master || 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6" *ngIf="currentUser.service">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-package tw-text-indigo-600 tw-mr-2"></i>
+          Service
+        </h3>
+        <div class="tw-flex tw-items-start tw-gap-4">
+          <img [src]="getServiceImage(currentUser.service.image)" 
+               [alt]="currentUser.service.title" 
+               class="tw-w-20 tw-h-20 tw-rounded-lg tw-object-cover tw-border tw-border-gray-200">
+          <div class="tw-flex-1">
+            <h4 class="tw-font-semibold tw-text-gray-900">{{ currentUser.service.title }}</h4>
+            <p class="tw-text-sm tw-text-gray-600 tw-mt-1">{{ currentUser.service.description }}</p>
+            <p class="tw-text-lg tw-font-bold tw-text-indigo-600 tw-mt-2">
+              {{ formatAmount(currentUser.service.price) }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Information Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-credit-card tw-text-blue-600 tw-mr-2"></i>
+          Payment Information
+        </h3>
+        <div class="tw-space-y-3">
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Status</label>
+            <div class="tw-mt-1">
+              <span [class]="'tw-inline-flex tw-px-3 tw-py-1 tw-text-sm tw-font-semibold tw-rounded-full ' + getPaymentStatusClass(currentUser.payment?.status)">
+                {{ getPaymentStatusText(currentUser.payment?.status) }}
+              </span>
+            </div>
+          </div>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Amount Paid</label>
+            <p class="tw-text-lg tw-font-bold tw-text-gray-900 tw-mt-1">
+              {{ formatAmount(currentUser.payment?.amountPaid) }}
+            </p>
+          </div>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Payment ID</label>
+            <p class="tw-text-gray-900 tw-mt-1 tw-font-mono tw-text-sm">
+              {{ currentUser.payment?.paymentId || 'N/A' }}
+            </p>
+          </div>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Order ID</label>
+            <p class="tw-text-gray-900 tw-mt-1 tw-font-mono tw-text-sm">
+              {{ currentUser.payment?.orderId || 'N/A' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Log Card (if exists) -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6" *ngIf="currentUser.paymentLog">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-receipt tw-text-orange-600 tw-mr-2"></i>
+          Payment Log
+        </h3>
+        <div class="tw-space-y-3">
+          <div class="tw-flex tw-justify-between">
+            <span class="tw-text-sm tw-text-gray-500">Total Amount</span>
+            <span class="tw-font-semibold tw-text-gray-900">
+              {{ formatAmount(currentUser.paymentLog.totalAmount) }}
+            </span>
+          </div>
+          <div class="tw-flex tw-justify-between">
+            <span class="tw-text-sm tw-text-gray-500">Paid Amount</span>
+            <span class="tw-font-semibold tw-text-green-600">
+              {{ formatAmount(currentUser.paymentLog.paidAmount) }}
+            </span>
+          </div>
+          <div class="tw-flex tw-justify-between">
+            <span class="tw-text-sm tw-text-gray-500">Pending Amount</span>
+            <span class="tw-font-semibold tw-text-red-600">
+              {{ formatAmount(currentUser.paymentLog.pendingAmount) }}
+            </span>
+          </div>
+          <div class="tw-flex tw-justify-between">
+            <span class="tw-text-sm tw-text-gray-500">Status</span>
+            <span class="tw-font-semibold tw-text-gray-900">
+              {{ currentUser.paymentLog.status || 'N/A' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-file-pdf tw-text-red-600 tw-mr-2"></i>
+          Report
+        </h3>
+        <div class="tw-space-y-3">
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Report Status</label>
+            <div class="tw-mt-2">
+              <span *ngIf="currentUser.report?.url" 
+                    class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-text-sm tw-font-semibold tw-rounded-full tw-bg-green-100 tw-text-green-800">
+                <i class="ph ph-check-circle tw-mr-1"></i>
+                Generated
+              </span>
+              <span *ngIf="!currentUser.report?.url" 
+                    class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-text-sm tw-font-semibold tw-rounded-full tw-bg-yellow-100 tw-text-yellow-800">
+                <i class="ph ph-clock tw-mr-1"></i>
+                Pending
+              </span>
+            </div>
+          </div>
+          <div *ngIf="currentUser.report?.generatedAt">
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Generated At</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ formatDate(currentUser.report?.generatedAt ?? null) }}</p>
+          </div>
+          <button *ngIf="currentUser.report?.url" 
+                  (click)="downloadReport(currentUser.report?.url)" 
+                  class="tw-w-full tw-bg-red-600 hover:tw-bg-red-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-colors">
+            <i class="ph ph-download-simple"></i>
+            Download Report
           </button>
-          <button (click)="sendBulkNotification()" [disabled]="!canSendBulkNotification() || isNotificationLoading"
-                  class="tw-flex-1 sm:tw-flex-none tw-bg-orange-600 hover:tw-bg-orange-700 disabled:tw-bg-orange-300 disabled:tw-cursor-not-allowed tw-text-white tw-px-6 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2 tw-min-w-[120px]">
-            <i *ngIf="!isNotificationLoading" class="ph ph-paper-plane-tilt"></i>
-            <div *ngIf="isNotificationLoading"
-                 class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></div>
-            <span>{{ isNotificationLoading ? 'Sending...' : 'Send to ' + getSelectedUsersCount() + ' users' }}</span>
-          </button>
+        </div>
+      </div>
+
+      <!-- Delivery Status Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-paper-plane-tilt tw-text-teal-600 tw-mr-2"></i>
+          Delivery Status
+        </h3>
+        <div class="tw-space-y-3">
+          <div class="tw-flex tw-items-center tw-justify-between tw-p-3 tw-bg-gray-50 tw-rounded-lg">
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Email Sent</span>
+            <span class="tw-flex tw-items-center tw-gap-1">
+              <i [class]="'ph ' + getDeliveryIcon(currentUser.delivery?.emailSent) + ' tw-text-lg'"></i>
+              <span class="tw-text-sm tw-font-semibold">
+                {{ currentUser.delivery?.emailSent ? 'Yes' : 'No' }}
+              </span>
+            </span>
+          </div>
+          <div class="tw-flex tw-items-center tw-justify-between tw-p-3 tw-bg-gray-50 tw-rounded-lg">
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">WhatsApp Sent</span>
+            <span class="tw-flex tw-items-center tw-gap-1">
+              <i [class]="'ph ' + getDeliveryIcon(currentUser.delivery?.whatsappSent) + ' tw-text-lg'"></i>
+              <span class="tw-text-sm tw-font-semibold">
+                {{ currentUser.delivery?.whatsappSent ? 'Yes' : 'No' }}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timestamps Card -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-clock tw-text-gray-600 tw-mr-2"></i>
+          Timestamps
+        </h3>
+        <div class="tw-space-y-3">
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Created At</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ formatDate(currentUser.createdAt || null) }}</p>
+          </div>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Updated At</label>
+            <p class="tw-text-gray-900 tw-mt-1">{{ formatDate(currentUser.updatedAt || null) }}</p>
+          </div>
         </div>
       </div>
     </div>

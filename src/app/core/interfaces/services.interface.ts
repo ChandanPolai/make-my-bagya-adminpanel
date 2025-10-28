@@ -1,71 +1,83 @@
-// core/interfaces/services.interface.ts
-
-export interface PricingOption {
-  period: 'monthly' | 'annually' | 'lifetime access' | '3 months plan' | '6 months plan' | 'annual plan' | 'trial class' | 'masterclass';
-  price: number;
-  description?: string;  // NAYA - har period ka description
-  active?: boolean;  // NEW - for hide/show pricing options
-  validity_from?: string | Date;
-  validity_to?: string | Date;
-}
-
-export interface ServiceTax {
-  gst?: number;
-  sgst?: number;
-}
-
+// Service Interface
 export interface Service {
   _id?: string;
-  name: string;
-  description?: string;
-  tax?: ServiceTax;
-  pricingOptions: PricingOption[];
-  batch_time?: string;
-  accessType: 'recorded_tutorials' | 'live_session' | 'choreography';
-  dance_type?: string;
-  createdBy?: {
-    _id: string;
-    name: string;
-    email: string;
-  };
+  title: string;
+  description: string;
+  price: number;
+  image?: string;
+  isActive?: boolean;
+  createdBy?: AdminInfo | string;
   createdAt?: string | Date;
   updatedAt?: string | Date;
-  isDeleted?: boolean;
 }
 
+// Admin Info (populated in response)
+export interface AdminInfo {
+  _id?: string;
+  name?: string;
+  email?: string;
+}
+
+// API Response Interfaces
 export interface ServiceResponse {
-  success: boolean;
   message: string;
-  data?: Service;
-  error?: string;
+  data: Service | null;
+  status: number;
 }
 
 export interface PaginatedServiceResponse {
-  success: boolean;
   message: string;
-  data?: {
+  data: {
     docs: Service[];
     totalDocs: number;
     limit: number;
-    page: number;
     totalPages: number;
-    hasNextPage: boolean;
+    page: number;
+    pagingCounter: number;
     hasPrevPage: boolean;
-    nextPage: number | null;
+    hasNextPage: boolean;
     prevPage: number | null;
+    nextPage: number | null;
   };
-  error?: string;
+  status: number;
 }
 
-export interface ServiceCreateRequest {
-  name: string;
-  description?: string;
-  tax?: ServiceTax;
-  pricingOptions: PricingOption[];
-  batch_time?: string;
-  accessType: 'recorded_tutorials' | 'live_session' | 'choreography';
+// Request Interfaces
+export interface CreateServiceRequest {
+  title: string;
+  description: string;
+  price: number;
+  image?: string;
+  isActive?: boolean;
 }
 
-export interface ServiceUpdateRequest extends Partial<ServiceCreateRequest> {
+export interface GetAllServicesRequest {
+  page: number;
+  limit: number;
+  search?: string;
+  isActive?: boolean;
+}
+
+export interface GetServiceByIdRequest {
   id: string;
+}
+
+export interface UpdateServiceRequest {
+  id: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  image?: string;
+  isActive?: boolean;
+}
+
+export interface DeleteServiceRequest {
+  id: string;
+}
+
+// Delete Response with message
+export interface DeleteServiceResponse {
+  message: string;
+  data: null;
+  status: number;
 }
