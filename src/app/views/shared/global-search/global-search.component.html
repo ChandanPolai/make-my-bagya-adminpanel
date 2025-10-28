@@ -1,0 +1,42 @@
+<!-- Inline Global Search Component -->
+<div class="tw-flex tw-items-center tw-space-x-3">
+  <!-- Filter Selection -->
+  <div class="tw-min-w-[140px]">
+    <ng-select
+      [(ngModel)]="selectedFilter"
+      [clearable]="false"
+      [searchable]="false"
+      placeholder="Filter"
+      class="tw-custom-select">
+      <ng-option *ngFor="let filter of searchFilters" [value]="filter.value">
+        <div class="tw-flex tw-items-center tw-space-x-2">
+          <i [class]="filter.icon + ' tw-text-slate-500'"></i>
+          <span>{{ filter.label }}</span>
+        </div>
+      </ng-option>
+    </ng-select>
+  </div>
+
+  <!-- Search Input -->
+  <div class="tw-relative tw-min-w-[250px]">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="onSearch()"
+      [debounceTime]="1000"
+      (debounceEvent)="onSearchInput()"
+      placeholder="Global search..."
+      class="tw-w-full tw-px-3 tw-py-2 tw-pr-10 tw-border tw-border-slate-300 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-slate-500 focus:tw-border-slate-500 tw-transition-colors tw-duration-200">
+    <div class="tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2">
+      <i class="ph ph-magnifying-glass tw-text-slate-400 tw-text-sm"></i>
+    </div>
+  </div>
+
+  <!-- Search Button -->
+  <!-- <button
+    (click)="onSearch()"
+    [disabled]="!searchQuery.trim()"
+    class="tw-px-3 tw-py-2 tw-bg-slate-800 hover:tw-bg-slate-900 tw-text-white tw-rounded-lg tw-transition-colors tw-duration-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed">
+    <i class="ph ph-magnifying-glass tw-text-sm"></i>
+  </button> -->
+</div>

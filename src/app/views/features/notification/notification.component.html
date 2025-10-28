@@ -1,0 +1,362 @@
+<main
+  [class]="
+    'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto ' +
+    (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')
+  "
+>
+  <div class="tw-min-h-screen tw-p-4 tw-py-8">
+    <div class="tw-max-w-7xl tw-mx-auto">
+      <!-- Header Section -->
+      <div
+        class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-border tw-border-gray-200 tw-p-8 tw-mb-8 tw-transition-all tw-duration-300 hover:tw-shadow-xl"
+      >
+        <div
+          class="tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center lg:tw-justify-between tw-gap-6"
+        >
+          <div class="tw-flex tw-items-center tw-gap-4">
+            <div
+              class="tw-w-16 tw-h-16 tw-bg-gradient-to-br tw-from-blue-500 tw-to-blue-600 tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-shadow-lg"
+            >
+              <i class="ph ph-bell tw-text-white tw-text-3xl"></i>
+            </div>
+            <div>
+              <h1 class="tw-text-4xl tw-font-bold tw-text-gray-900 tw-mb-2">
+                Notifications
+              </h1>
+              <p class="tw-text-gray-600 tw-text-lg">
+                Stay updated with your latest activities
+              </p>
+            </div>
+          </div>
+
+          <!-- Stats Cards -->
+          <div class="tw-flex tw-gap-4">
+            <div
+              class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-4 tw-text-center tw-min-w-[100px] tw-transition-all tw-duration-300 hover:tw-shadow-md"
+            >
+              <div class="tw-text-2xl tw-font-bold tw-text-blue-600">
+                {{ totalNotifications }}
+              </div>
+              <div class="tw-text-sm tw-text-gray-600">Total</div>
+            </div>
+            <div
+              class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-4 tw-text-center tw-min-w-[100px] tw-transition-all tw-duration-300 hover:tw-shadow-md"
+            >
+              <div class="tw-text-2xl tw-font-bold tw-text-green-600">
+                {{ getTodayNotificationsCount() }}
+              </div>
+              <div class="tw-text-sm tw-text-gray-600">Today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isNotificationsLoading" class="tw-text-center tw-py-12">
+        <div
+          class="tw-inline-block tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-blue-600"
+        ></div>
+        <p class="tw-mt-4 tw-text-gray-600">Loading notifications...</p>
+      </div>
+
+      <!-- Notifications List -->
+      <div
+        class="tw-space-y-4 tw-mb-8"
+        *ngIf="!isNotificationsLoading && notifications.length > 0"
+      >
+        <div
+          *ngFor="
+            let notification of notifications
+              | paginate
+                : {
+                    itemsPerPage: notificationsPayload.limit,
+                    currentPage: notificationsPayload.page,
+                    totalItems: totalNotifications
+                  }
+          "
+          class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-border tw-border-gray-200 tw-overflow-hidden tw-transition-all tw-duration-300 hover:tw-shadow-xl hover:tw-transform hover:-tw-translate-y-1 tw-cursor-pointer tw-w-full"
+          (click)="openNotificationDetailsModal(notification)"
+        >
+          <!-- Card Content - Horizontal Layout -->
+          <div class="tw-flex tw-items-center tw-p-6">
+            <!-- Icon Section -->
+            <div class="tw-flex-shrink-0 tw-mr-4">
+              <div
+                class="tw-w-16 tw-h-16 tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-shadow-lg"
+                [class]="getNotificationIconBackground(notification.eventType)"
+              >
+                <i
+                  [class]="
+                    getNotificationIcon(notification.eventType) +
+                    ' tw-text-2xl tw-text-white'
+                  "
+                ></i>
+              </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="tw-flex-1 tw-min-w-0">
+              <div class="tw-flex tw-items-start tw-justify-between tw-mb-3">
+                <div>
+                  <h3 class="tw-text-xl tw-font-bold tw-text-gray-900 tw-mb-1">
+                    {{ notification.message | titlecase }}
+                  </h3>
+                  <p class="tw-text-sm tw-text-gray-600">
+                    {{ formatDate(notification.createdAt) }}
+                  </p>
+                </div>
+                <div class="tw-flex-shrink-0 tw-ml-4 tw-text-blue-500">
+                  <i class="ph ph-arrow-right tw-text-xl"></i>
+                </div>
+              </div>
+
+              <p
+                class="tw-text-gray-700 tw-mb-4 tw-leading-relaxed tw-line-clamp-2"
+              >
+                {{ notification.message }}
+              </p>
+
+              <!-- Badges Section -->
+              <div
+                class="tw-flex tw-items-center tw-gap-3 tw-text-sm tw-flex-wrap"
+              >
+                <span
+                  class="tw-flex tw-items-center tw-gap-1 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-lg tw-text-gray-600"
+                >
+                  <i class="ph ph-clock"></i>
+                  {{ formatDate(notification.createdAt) }}
+                </span>
+                <span
+                  [class]="
+                    notification.status === 'read'
+                      ? 'tw-bg-gray-100 tw-text-gray-600'
+                      : 'tw-bg-blue-100 tw-text-blue-700'
+                  "
+                  class="tw-flex tw-items-center tw-gap-1 tw-px-3 tw-py-1 tw-rounded-lg"
+                >
+                  <div
+                    [class]="
+                      notification.status === 'read'
+                        ? 'tw-bg-gray-500'
+                        : 'tw-bg-blue-500'
+                    "
+                    class="tw-w-2 tw-h-2 tw-rounded-full"
+                  ></div>
+                  {{ notification.status === "read" ? "Read" : "Unread" }}
+                </span>
+                <span
+                  *ngIf="notification.relatedId?.company"
+                  class="tw-flex tw-items-center tw-gap-1 tw-bg-purple-100 tw-px-3 tw-py-1 tw-rounded-lg tw-text-purple-700"
+                >
+                  <i class="ph ph-buildings"></i>
+                  {{ notification.relatedId.company }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div
+        *ngIf="!isNotificationsLoading && notifications.length === 0"
+        class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-border tw-border-gray-200 tw-p-12 tw-text-center"
+      >
+        <div class="tw-max-w-md tw-mx-auto">
+          <div
+            class="tw-w-32 tw-h-32 tw-mx-auto tw-mb-6 tw-bg-gradient-to-br tw-from-gray-100 tw-to-gray-200 tw-rounded-full tw-flex tw-items-center tw-justify-center"
+          >
+            <i class="ph ph-bell-slash tw-text-6xl tw-text-gray-400"></i>
+          </div>
+          <h3 class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mb-3">
+            No notifications yet
+          </h3>
+          <p class="tw-text-gray-600 tw-text-lg tw-mb-6">
+            You're all caught up! New notifications will appear here.
+          </p>
+          <button
+            (click)="onNotificationsSearch()"
+            class="tw-px-6 tw-py-3 tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-700 tw-text-white tw-rounded-xl hover:tw-from-blue-700 hover:tw-to-blue-800 tw-transition-all tw-transform hover:tw-scale-105 tw-shadow-lg"
+          >
+            <i class="ph ph-arrow-clockwise tw-mr-2"></i>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div
+        class="tw-mt-8 tw-flex tw-justify-center"
+        *ngIf="notifications.length > 0"
+      >
+        <div class="tw-p-4">
+          <pagination-controls
+            (pageChange)="onNotificationsPageChange($event)"
+            [maxSize]="7"
+            [directionLinks]="true"
+            [autoHide]="false"
+            previousLabel="Previous"
+            nextLabel="Next"
+          >
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Details Modal -->
+  <div
+    *ngIf="isNotificationDetailsModalOpen"
+    class="tw-fixed tw-inset-0 tw-z-50 tw-overflow-y-auto tw-bg-black/40 tw-backdrop-blur-sm"
+    (click)="closeNotificationDetailsModal()"
+  >
+    <div
+      class="tw-flex tw-items-center tw-justify-center tw-min-h-screen tw-pt-4 tw-px-4 tw-pb-20 tw-text-center sm:tw-block sm:tw-p-0"
+    >
+      <div
+        class="tw-inline-block tw-align-bottom tw-bg-white tw-rounded-2xl tw-text-left tw-overflow-hidden tw-shadow-2xl tw-transform tw-transition-all sm:tw-my-8 sm:tw-align-middle tw-w-full tw-max-w-2xl tw-max-h-[90vh]"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Modal Header -->
+        <div
+          class="tw-flex tw-justify-between tw-items-center tw-p-6 tw-border-b tw-border-gray-200 tw-bg-gradient-to-r tw-from-blue-50 tw-to-indigo-50"
+        >
+          <div class="tw-flex tw-items-center tw-gap-4">
+            <div
+              class="tw-w-12 tw-h-12 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-flex-shrink-0 tw-bg-gradient-to-br tw-from-blue-500 tw-to-blue-600 tw-shadow-lg"
+            >
+              <i class="ph ph-bell tw-text-xl tw-text-white"></i>
+            </div>
+            <div>
+              <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900">
+                Notification Details
+              </h2>
+              <p class="tw-text-sm tw-text-gray-600">
+                {{ selectedNotification?.message | titlecase }}
+              </p>
+            </div>
+          </div>
+          <button
+            class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-2xl tw-transition-colors tw-w-10 tw-h-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg hover:tw-bg-gray-100"
+            (click)="closeNotificationDetailsModal()"
+          >
+            <i class="ph ph-x"></i>
+          </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="tw-overflow-y-auto tw-max-h-[70vh]">
+          <div class="tw-p-6">
+            <div
+              class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-mb-6"
+            >
+              <div
+                class="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-border tw-border-gray-100"
+              >
+                <h4
+                  class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1 tw-uppercase tw-tracking-wider"
+                >
+                  Date & Time
+                </h4>
+                <p class="tw-text-sm tw-font-semibold tw-text-gray-900">
+                  {{ formatDate(selectedNotification!.createdAt) }}
+                </p>
+              </div>
+              <div
+                class="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-border tw-border-gray-100"
+              >
+                <h4
+                  class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1 tw-uppercase tw-tracking-wider"
+                >
+                  Status
+                </h4>
+                <span
+                  [class]="
+                    selectedNotification?.status === 'read'
+                      ? 'tw-bg-gray-100 tw-text-gray-600'
+                      : 'tw-bg-blue-100 tw-text-blue-700'
+                  "
+                  class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium"
+                >
+                  <div
+                    [class]="
+                      selectedNotification?.status === 'read'
+                        ? 'tw-bg-gray-500'
+                        : 'tw-bg-blue-500'
+                    "
+                    class="tw-w-2 tw-h-2 tw-rounded-full tw-mr-2"
+                  ></div>
+                  {{
+                    selectedNotification?.status === "read" ? "Read" : "Unread"
+                  }}
+                </span>
+              </div>
+            </div>
+
+            <div
+              *ngIf="selectedNotification?.relatedId"
+              class="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-mb-6 tw-border tw-border-gray-100"
+            >
+              <h4
+                class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-3 tw-uppercase tw-tracking-wider"
+              >
+                Related Information
+              </h4>
+              <div class="tw-space-y-2">
+                <p
+                  class="tw-text-sm tw-text-gray-700"
+                  *ngIf="selectedNotification?.relatedId?.company"
+                >
+                  <span class="tw-font-semibold">Company:</span>
+                  {{ selectedNotification?.relatedId?.company }}
+                </p>
+                <p
+                  class="tw-text-sm tw-text-gray-700"
+                  *ngIf="selectedNotification?.relatedId?.contactPerson"
+                >
+                  <span class="tw-font-semibold">Contact:</span>
+                  {{ selectedNotification?.relatedId?.contactPerson }}
+                </p>
+                <p
+                  class="tw-text-sm tw-text-gray-700"
+                  *ngIf="selectedNotification?.relatedId?.email"
+                >
+                  <span class="tw-font-semibold">Email:</span>
+                  {{ selectedNotification?.relatedId?.email }}
+                </p>
+              </div>
+            </div>
+
+            <div class="tw-mb-6">
+              <h4
+                class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center tw-gap-2"
+              >
+                <i class="ph ph-chat-circle-text tw-text-blue-500"></i>
+                <span>Message</span>
+              </h4>
+              <div
+                class="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-border tw-border-gray-100"
+              >
+                <p class="tw-text-gray-700 tw-leading-relaxed">
+                  {{ selectedNotification?.message }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          class="tw-bg-gray-50 tw-px-6 tw-py-4 tw-flex tw-justify-end tw-border-t tw-border-gray-200"
+        >
+          <button
+            (click)="closeNotificationDetailsModal()"
+            class="tw-px-6 tw-py-2.5 tw-bg-white tw-border tw-border-gray-300 tw-text-gray-700 tw-text-sm tw-font-medium tw-rounded-xl hover:tw-bg-gray-50 tw-transition-colors tw-duration-200 tw-shadow-sm"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,68 @@
+<!-- footer.component.html -->
+<footer
+  [class]="
+    'tw-fixed tw-bottom-0 tw-right-0 tw-border-t tw-border-gray-200 tw-transition-all tw-duration-300 ' +
+    currentTheme.background +
+    ' ' +
+    (isCollapsed ? 'tw-left-16' : 'tw-left-64')
+  "
+>
+  <!-- Main Footer -->
+  <div class="tw-px-6 tw-py-2">
+    <div class="tw-flex tw-items-center tw-justify-between">
+      <!-- Left Section -->
+      <div class="tw-flex tw-items-center tw-space-x-6">
+        <p class="tw-text-sm tw-text-gray-600">
+          © {{ currentYear }} ITFuturz. All rights reserved.
+        </p>
+
+        <!-- <div class="tw-flex tw-items-center tw-space-x-4 tw-text-xs tw-text-gray-500">
+          <a href="#" class="hover:tw-text-gray-700 tw-transition-colors tw-duration-200"
+            >Privacy Policy</a
+          >
+          <span>•</span>
+          <a href="#" class="hover:tw-text-gray-700 tw-transition-colors tw-duration-200"
+            >Terms of Service</a
+          >
+          <span>•</span>
+          <a href="#" class="hover:tw-text-gray-700 tw-transition-colors tw-duration-200"
+            >Support</a
+          >
+        </div> -->
+      </div>
+
+      <!-- Right Section -->
+      <div class="tw-flex tw-items-center tw-space-x-4">
+        <!-- Developer Hiring Process Status -->
+        <div class="tw-flex tw-items-center tw-space-x-2 tw-text-xs tw-text-gray-500">
+          <i class="ph-workflow"></i>
+          <span>Hiring Process Active</span>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="tw-flex tw-items-center tw-space-x-2">
+          <button
+            class="tw-p-1.5 tw-rounded-lg hover:tw-bg-gray-100 tw-transition-colors tw-duration-200"
+            title="Help"
+          >
+            <i class="ph-question tw-text-gray-500 tw-text-sm"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- 
+ tw-p-1.5 tw-rounded-lg hover:tw-bg-gray-100 tw-transition-colors tw-duration-200"
+            title="Refresh Data">
+            <i class="ph-arrow-clockwise tw-text-gray-500 tw-text-sm"></i>
+          </button>
+          
+          <button 
+            class="tw-p-1.5 tw-rounded-lg hover:tw-bg-gray-100 tw-transition-colors tw-duration-200"
+            title="Export Report">
+            <i class="ph-download tw-text-gray-500 tw-text-sm"></i>
+          </button>
+          
+          <button 
+            class=" -->

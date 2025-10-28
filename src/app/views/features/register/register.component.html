@@ -1,0 +1,179 @@
+<div class="tw-min-h-screen tw-bg-gray-50 tw-flex tw-items-center tw-justify-center tw-py-12 tw-px-4">
+  <div class="tw-max-w-md tw-w-full tw-space-y-8">
+    <!-- Header -->
+    <div class="tw-text-center">
+      <h2 class="tw-text-3xl tw-font-bold tw-text-gray-900">Create User Account</h2>
+      <p class="tw-mt-2 tw-text-sm tw-text-gray-600">
+        Fill in the details to create a new user
+      </p>
+    </div>
+
+    <!-- Form -->
+    <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="tw-space-y-4">
+        
+        <!-- Profile Picture Upload -->
+        <div class="tw-text-center">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Profile Picture
+            <span class="tw-text-gray-500 tw-text-xs">[Max 5MB, JPG/PNG only]</span>
+          </label>
+          
+          <!-- File upload area -->
+          <div class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-md tw-p-4 tw-text-center hover:tw-border-blue-400 tw-transition-colors"
+               [class.tw-border-blue-400]="selectedFile"
+               [class.tw-border-red-400]="fileError"
+               (dragover)="onDragOver($event)"
+               (dragleave)="onDragLeave($event)"
+               (drop)="onDrop($event)">
+            
+            <input #fileInput type="file" (change)="onFileSelected($event)" 
+                   accept="image/jpeg,image/jpg,image/png" class="tw-hidden">
+            
+            <!-- No file selected -->
+            <div *ngIf="!selectedFile">
+              <i class="ph ph-image tw-text-3xl tw-text-gray-400 tw-mb-2"></i>
+              <p class="tw-text-sm tw-text-gray-600">
+                Drag & drop image here or 
+                <button type="button" (click)="fileInput.click()" 
+                        class="tw-text-blue-500 hover:tw-text-blue-700">browse file</button>
+              </p>
+              <p class="tw-text-xs tw-text-gray-500 tw-mt-1">Maximum file size: 5MB</p>
+            </div>
+            
+            <!-- Selected file display with preview -->
+            <div *ngIf="selectedFile" class="tw-space-y-3">
+              <!-- Image Preview -->
+              <div class="tw-flex tw-justify-center">
+                <img [src]="getImagePreviewUrl()" 
+                     [alt]="selectedFile.name"
+                     class="tw-w-20 tw-h-20 tw-object-cover tw-rounded-full tw-border-2 tw-border-gray-300">
+              </div>
+              
+              <!-- File Info -->
+              <div class="tw-flex tw-items-center tw-justify-center">
+                <i class="ph ph-image tw-text-blue-500 tw-text-lg tw-mr-2"></i>
+                <div class="tw-text-center">
+                  <p class="tw-text-sm tw-font-medium tw-text-gray-900">{{ selectedFile.name }}</p>
+                  <p class="tw-text-xs tw-text-gray-500">{{ getFileSize(selectedFile.size) }}</p>
+                </div>
+                <button type="button" (click)="removeSelectedFile()" 
+                        class="tw-ml-3 tw-text-red-500 hover:tw-text-red-700">
+                  <i class="ph ph-x-circle tw-text-lg"></i>
+                </button>
+              </div>
+              
+              <!-- Change Image Button -->
+              <button type="button" (click)="fileInput.click()" 
+                      class="tw-text-blue-500 hover:tw-text-blue-700 tw-text-sm tw-underline">
+                Change Image
+              </button>
+            </div>
+          </div>
+          
+          <!-- File error message -->
+          <p *ngIf="fileError" class="tw-text-red-500 tw-text-sm tw-mt-1">{{ fileError }}</p>
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Full Name <code class="tw-text-red-500">*</code>
+          </label>
+          <input formControlName="name" type="text" placeholder="Enter full name"
+                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+                 [class.tw-border-red-500]="isFieldInvalid('name')">
+          <p *ngIf="isFieldInvalid('name')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            {{ getFieldError('name') }}
+          </p>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Email Address <code class="tw-text-red-500">*</code>
+          </label>
+          <input formControlName="email" type="email" placeholder="Enter email address"
+                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+                 [class.tw-border-red-500]="isFieldInvalid('email')">
+          <p *ngIf="isFieldInvalid('email')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            {{ getFieldError('email') }}
+          </p>
+        </div>
+
+        <!-- Mobile Number -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Mobile Number <code class="tw-text-red-500">*</code>
+          </label>
+          <input formControlName="mobile_number" type="tel" placeholder="Enter 10-digit mobile number"
+                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+                 [class.tw-border-red-500]="isFieldInvalid('mobile_number')">
+          <p *ngIf="isFieldInvalid('mobile_number')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            {{ getFieldError('mobile_number') }}
+          </p>
+        </div>
+
+        <!-- Date of Birth -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Date of Birth
+          </label>
+          <input formControlName="date_of_birth" bsDatepicker
+                 [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue', adaptivePosition: true }"
+                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+                 placeholder="Select date of birth">
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Password <code class="tw-text-red-500">*</code>
+          </label>
+          <input formControlName="password" type="password" placeholder="Enter password"
+                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+                 [class.tw-border-red-500]="isFieldInvalid('password')">
+          <p *ngIf="isFieldInvalid('password')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            {{ getFieldError('password') }}
+          </p>
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Confirm Password <code class="tw-text-red-500">*</code>
+          </label>
+          <input formControlName="confirmPassword" type="password" placeholder="Confirm password"
+                 class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+                 [class.tw-border-red-500]="isFieldInvalid('confirmPassword')">
+          <p *ngIf="isFieldInvalid('confirmPassword')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            {{ getFieldError('confirmPassword') }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="tw-flex tw-gap-3 tw-pt-4">
+          <button type="button" (click)="cancelForm()"
+                  class="tw-flex-1 tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-font-medium tw-py-3 tw-px-4 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
+            <i class="ph ph-x"></i>
+            Cancel
+          </button>
+          
+          <button type="submit" [disabled]="registerForm.invalid || isLoading"
+                  class="tw-flex-1 tw-bg-blue-600 hover:tw-bg-blue-700 disabled:tw-bg-blue-300 tw-text-white tw-font-medium tw-py-3 tw-px-4 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
+            <i *ngIf="!isLoading" class="ph ph-user-plus"></i>
+            <div *ngIf="isLoading" 
+                 class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></div>
+            {{ isLoading ? 'Creating...' : 'Create User' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="tw-text-center tw-text-sm tw-text-gray-500">
+      <p>All fields marked with <code class="tw-text-red-500">*</code> are required</p>
+    </div>
+  </div>
+</div>

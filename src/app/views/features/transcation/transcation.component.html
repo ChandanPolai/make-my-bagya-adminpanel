@@ -1,0 +1,387 @@
+<main [class]="'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto ' + (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')">
+  <!-- List/Approval View -->
+  <div *ngIf="mode === 'list' || mode === 'approval'" class="tw-p-4 md:tw-p-7">
+    <!-- Header Section -->
+    <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-justify-between tw-mb-4 tw-gap-3">
+      <div>
+        <h2 class="tw-text-xl tw-font-bold tw-text-gray-900 tw-uppercase">
+          {{ mode === 'approval' ? 'Payments for Approval' : 'All Transactions' }}
+        </h2>
+        <p class="tw-text-sm tw-text-gray-600 tw-mt-1">
+          {{ mode === 'approval' ? 'Non-Razorpay payments requiring manual approval' : 'Complete payment transaction history' }}
+        </p>
+      </div>
+      <div class="tw-flex tw-gap-2">
+        <button (click)="switchToAllPayments()" 
+                [class]="'tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors ' + 
+                         (mode === 'list' ? 'tw-bg-blue-600 tw-text-white' : 'tw-bg-gray-200 tw-text-gray-700 hover:tw-bg-gray-300')">
+          <i class="ph ph-list tw-text-lg"></i>
+          <span class="tw-hidden sm:tw-inline">All Payments</span>
+        </button>
+        <button (click)="switchToApprovalPayments()" 
+                [class]="'tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors ' + 
+                         (mode === 'approval' ? 'tw-bg-orange-600 tw-text-white' : 'tw-bg-gray-200 tw-text-gray-700 hover:tw-bg-gray-300')">
+          <i class="ph ph-clock tw-text-lg"></i>
+          <span class="tw-hidden sm:tw-inline">For Approval</span>
+        </button>
+        <!-- Export Excel Button -->
+        <button (click)="exportToExcel()" [disabled]="isLoading || transactions.length === 0"
+                class="tw-bg-green-600 hover:tw-bg-green-700 disabled:tw-bg-green-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+          <i class="ph ph-file-xls tw-text-lg"></i>
+          <span class="tw-hidden sm:tw-inline">Export Excel</span>
+        </button>
+        <button (click)="refreshData()" 
+                [disabled]="isLoading"
+                class="tw-bg-gray-600 hover:tw-bg-gray-700 disabled:tw-bg-gray-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+          <i [class]="isLoading ? 'ph ph-spinner tw-animate-spin' : 'ph ph-arrow-clockwise'" class="tw-text-lg"></i>
+          <span class="tw-hidden sm:tw-inline">{{ isLoading ? 'Loading...' : 'Refresh' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-end tw-gap-4 tw-mb-6">
+      <div class="tw-w-full sm:tw-w-44">
+        <small class="tw-font-semibold tw-block tw-mb-1">Status Filter</small>
+        <ng-select [items]="statusOptions" 
+                   bindLabel="label" 
+                   bindValue="value"
+                   [(ngModel)]="selectedStatus" 
+                   (ngModelChange)="onStatusChange()"
+                   placeholder="Select status" 
+                   class="tw-w-full">
+        </ng-select>
+      </div>
+      <div class="tw-w-full sm:tw-w-44">
+        <small class="tw-font-semibold tw-block tw-mb-1">Page Size</small>
+        <ng-select [items]="[10, 20, 50, 100]" 
+                   [(ngModel)]="paginationConfig.itemsPerPage" 
+                   placeholder="Select page size" 
+                   (ngModelChange)="onPageSizeChange()"
+                   class="tw-w-full">
+          <ng-template ng-option-tmp let-item="item">{{ item }} per page</ng-template>
+        </ng-select>
+      </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
+      <div class="tw-hidden md:tw-block tw-overflow-x-auto">
+        <table class="tw-table tw-w-full tw-border-collapse tw-min-w-[1000px]">
+          <thead class="tw-bg-gray-50">
+            <tr>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">#</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">User Details</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Service</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Amount</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Payment Method</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Status</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Date</th>
+              <th class="tw-px-4 tw-py-3 tw-text-center tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="tw-bg-white tw-divide-y tw-divide-gray-200">
+            <tr *ngIf="isLoading">
+              <td colspan="8" class="tw-px-4 tw-py-4 tw-text-center">
+                <div class="tw-flex tw-items-center tw-justify-center tw-py-8">
+                  <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600"></div>
+                  <span class="tw-ml-2">Loading transactions...</span>
+                </div>
+              </td>
+            </tr>
+            <tr *ngFor="let transaction of transactions | paginate: paginationConfig; let i = index" class="hover:tw-bg-gray-50 tw-transition-colors">
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap tw-text-sm tw-font-medium tw-text-gray-900">
+                {{ (paginationConfig.currentPage - 1) * paginationConfig.itemsPerPage + i + 1 }}
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap">
+                <div class="tw-flex tw-items-center">
+                  <div class="tw-flex-shrink-0 tw-h-10 tw-w-10">
+                    <img class="tw-h-10 tw-w-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-300" 
+                         [src]="getUserProfileImage(transaction.userId)" [alt]="getUserName(transaction.userId)">
+                  </div>
+                  <div class="tw-ml-4">
+                    <div class="tw-text-sm tw-font-medium tw-text-gray-900">{{ getUserName(transaction.userId) }}</div>
+                    <div class="tw-text-sm tw-text-gray-500">{{ getUserEmail(transaction.userId) }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap tw-text-sm tw-text-gray-900">
+                {{ getServiceName(transaction.serviceId) }}
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap">
+                <div class="tw-text-sm tw-font-medium tw-text-gray-900">{{ formatCurrency(transaction.amount) }}</div>
+                <div *ngIf="transaction.pending_amount > 0" class="tw-text-xs tw-text-orange-600">
+                  Pending: {{ formatCurrency(transaction.pending_amount) }}
+                </div>
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap tw-text-sm tw-text-gray-900">
+                <span class="tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-medium tw-rounded-md tw-bg-gray-100 tw-text-gray-800">
+                  {{ getPaymentMethodDisplay(transaction.paymentMethod) }}
+                </span>
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap">
+                <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ' + getStatusClass(transaction.status)">
+                  {{ getStatusText(transaction.status) }}
+                </span>
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap tw-text-sm tw-text-gray-500">
+                <div>{{ formatDate(transaction.createdAt) }}</div>
+                <div class="tw-text-xs tw-text-gray-400">
+                  {{ transaction.createdAt ? (transaction.createdAt | date:'hh:mm a') : 'N/A' }}
+                </div>
+              </td>
+              <td class="tw-px-4 tw-py-4 tw-whitespace-nowrap tw-text-center tw-text-sm tw-font-medium">
+                <div class="tw-flex tw-items-center tw-justify-center tw-gap-1">
+                  <button (click)="previewTransaction(transaction)" 
+                          class="tw-p-2 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md tw-transition-colors" 
+                          title="Preview Transaction">
+                    <i class="ph ph-eye tw-text-lg"></i>
+                  </button>
+                  <div *ngIf="mode === 'approval' && transaction.status === 'pending'" class="tw-flex tw-gap-1">
+                    <button (click)="updatePaymentStatus(transaction, 'success')" 
+                            class="tw-p-2 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md tw-transition-colors" 
+                            title="Approve Payment">
+                      <i class="ph ph-check tw-text-lg"></i>
+                    </button>
+                    <button (click)="updatePaymentStatus(transaction, 'failed')" 
+                            class="tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded-md tw-transition-colors" 
+                            title="Reject Payment">
+                      <i class="ph ph-x tw-text-lg"></i>
+                    </button>
+                  </div>
+                  <button (click)="deleteTransaction(transaction)" 
+                          class="tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded-md tw-transition-colors" 
+                          title="Delete Transaction">
+                    <i class="ph ph-trash tw-text-lg"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && transactions.length === 0">
+              <td colspan="8" class="tw-text-center tw-py-12">
+                <div class="tw-flex tw-flex-col tw-items-center tw-justify-center">
+                  <i class="ph ph-credit-card tw-text-6xl tw-text-gray-300 tw-mb-4"></i>
+                  <p class="tw-text-gray-500 tw-text-lg">No transactions found</p>
+                  <p class="tw-text-gray-400 tw-text-sm">Try adjusting your filters or check back later</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="md:tw-hidden">
+        <div *ngIf="isLoading" class="tw-flex tw-items-center tw-justify-center tw-py-12">
+          <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600"></div>
+          <span class="tw-ml-2">Loading transactions...</span>
+        </div>
+        <div *ngFor="let transaction of transactions | paginate: paginationConfig; let i = index" class="tw-border-b tw-border-gray-200 tw-p-4">
+          <div class="tw-flex tw-items-start tw-space-x-3">
+            <div class="tw-flex-shrink-0">
+              <img class="tw-h-12 tw-w-12 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-300" 
+                   [src]="getUserProfileImage(transaction.userId)" [alt]="getUserName(transaction.userId)">
+            </div>
+            <div class="tw-flex-1 tw-min-w-0">
+              <div class="tw-flex tw-items-start tw-justify-between">
+                <div class="tw-flex-1">
+                  <p class="tw-text-sm tw-font-medium tw-text-gray-900 tw-truncate">{{ getUserName(transaction.userId) }}</p>
+                  <p class="tw-text-sm tw-text-gray-500 tw-truncate">{{ getUserEmail(transaction.userId) }}</p>
+                  <p class="tw-text-sm tw-text-gray-600">{{ getServiceName(transaction.serviceId) }}</p>
+                  <div class="tw-mt-2 tw-flex tw-items-center tw-gap-2 tw-flex-wrap">
+                    <span class="tw-text-sm tw-font-semibold tw-text-gray-900">{{ formatCurrency(transaction.amount) }}</span>
+                    <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ' + getStatusClass(transaction.status)">
+                      {{ getStatusText(transaction.status) }}
+                    </span>
+                    <span class="tw-text-xs tw-text-gray-400">{{ formatDate(transaction.createdAt) }}</span>
+                  </div>
+                </div>
+                <div class="tw-flex tw-items-center tw-gap-1 tw-ml-2">
+                  <button (click)="previewTransaction(transaction)" 
+                          class="tw-p-1.5 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md tw-transition-colors" 
+                          title="Preview Transaction">
+                    <i class="ph ph-eye tw-text-base"></i>
+                  </button>
+                  <div *ngIf="mode === 'approval' && transaction.status === 'pending'" class="tw-flex tw-gap-1">
+                    <button (click)="updatePaymentStatus(transaction, 'success')" 
+                            class="tw-p-1.5 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md tw-transition-colors" 
+                            title="Approve">
+                      <i class="ph ph-check tw-text-base"></i>
+                    </button>
+                    <button (click)="updatePaymentStatus(transaction, 'failed')" 
+                            class="tw-p-1.5 tw-text-red-600 hover:tw-bg-red-50 tw-rounded-md tw-transition-colors" 
+                            title="Reject">
+                      <i class="ph ph-x tw-text-base"></i>
+                    </button>
+                  </div>
+                  <button (click)="deleteTransaction(transaction)" 
+                          class="tw-p-1.5 tw-text-red-600 hover:tw-bg-red-50 tw-rounded-md tw-transition-colors" 
+                          title="Delete">
+                    <i class="ph ph-trash tw-text-base"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!isLoading && transactions.length === 0" class="tw-text-center tw-py-12">
+          <i class="ph ph-credit-card tw-text-6xl tw-text-gray-300 tw-mb-4"></i>
+          <p class="tw-text-gray-500 tw-text-lg">No transactions found</p>
+          <p class="tw-text-gray-400 tw-text-sm tw-px-4">Try adjusting your filters or check back later</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="tw-mt-6 tw-flex tw-justify-center" *ngIf="totalTransactions > 0">
+      <pagination-controls 
+        [id]="'transactions-pagination'"
+        (pageChange)="onPageChange($event)"
+        [maxSize]="5" 
+        [directionLinks]="true" 
+        [autoHide]="false"
+        [responsive]="true"
+        previousLabel="Previous" 
+        nextLabel="Next">
+      </pagination-controls>
+    </div>
+  </div>
+
+  <!-- Preview Transaction Modal -->
+  <div *ngIf="mode === 'preview' && currentTransaction" 
+       class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
+    <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-2xl tw-max-h-[95vh] tw-overflow-hidden">
+      <div class="tw-flex tw-items-center tw-justify-between tw-p-4 sm:tw-p-6 tw-border-b tw-bg-blue-50">
+        <div>
+          <h3 class="tw-text-lg sm:tw-text-xl tw-font-bold tw-text-blue-900">Transaction Details</h3>
+          <p class="tw-text-sm tw-text-blue-700">Complete transaction information</p>
+        </div>
+        <button (click)="cancelPreview()" 
+                class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-xl sm:tw-text-2xl tw-transition-colors tw-p-1">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <div class="tw-p-4 sm:tw-p-6 tw-overflow-y-auto tw-max-h-[calc(95vh-12rem)]">
+        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
+          <!-- User Information -->
+          <div class="tw-bg-gray-50 tw-rounded-lg tw-p-4">
+            <h4 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-3">User Information</h4>
+            <div class="tw-flex tw-items-center tw-mb-4">
+              <img class="tw-w-16 tw-h-16 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-300" 
+                   [src]="getUserProfileImage(currentTransaction.userId)" 
+                   [alt]="getUserName(currentTransaction.userId)">
+              <div class="tw-ml-4">
+                <h5 class="tw-text-base tw-font-medium tw-text-gray-900">{{ getUserName(currentTransaction.userId) }}</h5>
+                <p class="tw-text-sm tw-text-gray-600">{{ getUserEmail(currentTransaction.userId) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Information -->
+          <div class="tw-bg-gray-50 tw-rounded-lg tw-p-4">
+            <h4 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-3">Payment Details</h4>
+            <div class="tw-space-y-3">
+              <div>
+                <label class="tw-text-sm tw-font-medium tw-text-gray-500">Amount</label>
+                <p class="tw-text-lg tw-font-semibold tw-text-gray-900">{{ formatCurrency(currentTransaction.amount) }}</p>
+              </div>
+              <div *ngIf="currentTransaction.pending_amount > 0">
+                <label class="tw-text-sm tw-font-medium tw-text-gray-500">Pending Amount</label>
+                <p class="tw-text-sm tw-font-medium tw-text-orange-600">{{ formatCurrency(currentTransaction.pending_amount) }}</p>
+              </div>
+              <div>
+                <label class="tw-text-sm tw-font-medium tw-text-gray-500">Currency</label>
+                <p class="tw-text-sm tw-text-gray-900">{{ currentTransaction.currency }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Information -->
+          <div class="tw-bg-gray-50 tw-rounded-lg tw-p-4">
+            <h4 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-3">Service Details</h4>
+            <div>
+              <label class="tw-text-sm tw-font-medium tw-text-gray-500">Service</label>
+              <p class="tw-text-sm tw-text-gray-900">{{ getServiceName(currentTransaction.serviceId) }}</p>
+            </div>
+          </div>
+
+          <!-- Transaction Information -->
+          <div class="tw-bg-gray-50 tw-rounded-lg tw-p-4">
+            <h4 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-3">Transaction Info</h4>
+            <div class="tw-space-y-3">
+              <div>
+                <label class="tw-text-sm tw-font-medium tw-text-gray-500">Status</label>
+                <div class="tw-mt-1">
+                  <span [class]="'tw-inline-flex tw-px-3 tw-py-1 tw-text-sm tw-font-semibold tw-rounded-full ' + getStatusClass(currentTransaction.status)">
+                    {{ getStatusText(currentTransaction.status) }}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <label class="tw-text-sm tw-font-medium tw-text-gray-500">Payment Method</label>
+                <p class="tw-text-sm tw-text-gray-900">{{ getPaymentMethodDisplay(currentTransaction.paymentMethod) }}</p>
+              </div>
+              <div *ngIf="currentTransaction.razorpayTransactionId">
+                <label class="tw-text-sm tw-font-medium tw-text-gray-500">Razorpay Transaction ID</label>
+                <p class="tw-text-sm tw-text-gray-900 tw-font-mono">{{ currentTransaction.razorpayTransactionId }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Details -->
+        <div *ngIf="currentTransaction.details || currentTransaction.image" class="tw-mt-6">
+          <div *ngIf="currentTransaction.details" class="tw-mb-4">
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Details</label>
+            <p class="tw-text-sm tw-text-gray-900 tw-bg-gray-50 tw-p-3 tw-rounded-md tw-mt-1">{{ currentTransaction.details }}</p>
+          </div>
+          
+          <div *ngIf="currentTransaction.image" class="tw-mb-4">
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Payment Screenshot</label>
+            <div class="tw-mt-2">
+              <img [src]="environment.imageUrl + currentTransaction.image" 
+                   [alt]="'Payment screenshot'"
+                   class="tw-max-w-full tw-h-auto tw-rounded-lg tw-border tw-border-gray-300 tw-shadow-sm">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-mt-6">
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Transaction Date</label>
+            <p class="tw-text-sm tw-text-gray-900">{{ formatDate(currentTransaction.createdAt) }}</p>
+            <p class="tw-text-xs tw-text-gray-500">{{ currentTransaction.createdAt | date:'hh:mm a' }}</p>
+          </div>
+          <div>
+            <label class="tw-text-sm tw-font-medium tw-text-gray-500">Transaction ID</label>
+            <p class="tw-text-sm tw-text-gray-900 tw-font-mono tw-break-all">{{ currentTransaction._id }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="tw-flex tw-flex-col sm:tw-flex-row tw-justify-between tw-items-center tw-p-4 sm:tw-p-6 tw-border-t tw-bg-gray-50 tw-gap-3">
+        <div *ngIf="currentTransaction.status === 'pending'" class="tw-flex tw-gap-2 tw-w-full sm:tw-w-auto">
+          <button (click)="updatePaymentStatus(currentTransaction, 'success')"
+                  class="tw-flex-1 sm:tw-flex-none tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
+            <i class="ph ph-check"></i>
+            Approve
+          </button>
+          <button (click)="updatePaymentStatus(currentTransaction, 'failed')"
+                  class="tw-flex-1 sm:tw-flex-none tw-bg-red-600 hover:tw-bg-red-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
+            <i class="ph ph-x"></i>
+            Reject
+          </button>
+        </div>
+        <div class="tw-flex tw-gap-3 tw-w-full sm:tw-w-auto">
+          <button (click)="cancelPreview()"
+                  class="tw-flex-1 sm:tw-flex-none tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-justify-center tw-gap-2">
+            <i class="ph ph-x"></i>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

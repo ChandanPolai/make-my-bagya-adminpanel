@@ -1,0 +1,185 @@
+<main [class]="
+    'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto tw-min-h-screen ' +
+    (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')
+  ">
+  <div class="tw-p-4 sm:tw-p-6 tw-bg-gray-50 tw-min-h-full">
+    
+    <!-- Header Section -->
+    <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-justify-between tw-mb-6 tw-gap-3">
+      <div>
+        <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900 tw-uppercase">Dashboard</h2>
+        <p class="tw-text-gray-600 tw-mt-1">Overview of your application statistics</p>
+      </div>
+      <div class="tw-flex tw-gap-2">
+        <!-- Refresh Button -->
+        <button (click)="refreshData()" 
+                [disabled]="isLoading"
+                class="tw-bg-blue-600 hover:tw-bg-blue-700 disabled:tw-bg-blue-400 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+          <i [class]="isLoading ? 'ph ph-spinner tw-animate-spin' : 'ph ph-arrow-clockwise'" class="tw-text-lg"></i>
+          <span class="tw-hidden sm:tw-inline">{{ isLoading ? 'Loading...' : 'Refresh' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading && !dashboardData" class="tw-flex tw-items-center tw-justify-center tw-py-12">
+      <div class="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-blue-600"></div>
+      <span class="tw-ml-3 tw-text-lg tw-text-gray-600">Loading dashboard data...</span>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div *ngIf="dashboardData && !isLoading" class="tw-space-y-6">
+      
+      <!-- Overview Cards Grid -->
+      <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 xl:tw-grid-cols-5 tw-gap-4 lg:tw-gap-6">
+        
+        <!-- Users Card -->
+        <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-blue-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div>
+              <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Users</p>
+              <p class="tw-text-2xl tw-font-bold tw-text-gray-900">{{ dashboardData.users.total }}</p>
+            </div>
+            <div class="tw-p-3 tw-bg-blue-100 tw-rounded-full">
+              <i class="ph ph-users tw-text-2xl tw-text-blue-600"></i>
+            </div>
+          </div>
+          <div class="tw-mt-4 tw-flex tw-items-center tw-text-sm">
+            <span class="tw-text-green-600 tw-font-medium">{{ dashboardData.users.active }}</span>
+            <span class="tw-mx-1 tw-text-gray-500">active,</span>
+            <span class="tw-text-red-600 tw-font-medium">{{ dashboardData.users.inactive }}</span>
+            <span class="tw-ml-1 tw-text-gray-500">inactive</span>
+          </div>
+        </div>
+
+        <!-- Videos Card -->
+        <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-green-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div>
+              <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Videos</p>
+              <p class="tw-text-2xl tw-font-bold tw-text-gray-900">{{ dashboardData.videos.total }}</p>
+            </div>
+            <div class="tw-p-3 tw-bg-green-100 tw-rounded-full">
+              <i class="ph ph-video tw-text-2xl tw-text-green-600"></i>
+            </div>
+          </div>
+          <div class="tw-mt-4 tw-flex tw-items-center tw-text-sm">
+            <span class="tw-text-green-600 tw-font-medium">{{ dashboardData.videos.active }}</span>
+            <span class="tw-mx-1 tw-text-gray-500">active,</span>
+            <span class="tw-text-red-600 tw-font-medium">{{ dashboardData.videos.inactive }}</span>
+            <span class="tw-ml-1 tw-text-gray-500">inactive</span>
+          </div>
+        </div>
+
+        <!-- Categories Card -->
+        <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-purple-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div>
+              <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Categories</p>
+              <p class="tw-text-2xl tw-font-bold tw-text-gray-900">{{ dashboardData.categories.total }}</p>
+            </div>
+            <div class="tw-p-3 tw-bg-purple-100 tw-rounded-full">
+              <i class="ph ph-squares-four tw-text-2xl tw-text-purple-600"></i>
+            </div>
+          </div>
+          <div class="tw-mt-4 tw-flex tw-items-center tw-text-sm">
+            <span class="tw-text-green-600 tw-font-medium">{{ dashboardData.categories.active }}</span>
+            <span class="tw-mx-1 tw-text-gray-500">active,</span>
+            <span class="tw-text-red-600 tw-font-medium">{{ dashboardData.categories.inactive }}</span>
+            <span class="tw-ml-1 tw-text-gray-500">inactive</span>
+          </div>
+        </div>
+
+        <!-- Sub Categories Card -->
+        <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-orange-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div>
+              <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Sub Categories</p>
+              <p class="tw-text-2xl tw-font-bold tw-text-gray-900">{{ dashboardData.subCategories.total }}</p>
+            </div>
+            <div class="tw-p-3 tw-bg-orange-100 tw-rounded-full">
+              <i class="ph ph-grid-four tw-text-2xl tw-text-orange-600"></i>
+            </div>
+          </div>
+          <div class="tw-mt-4 tw-flex tw-items-center tw-text-sm">
+            <span class="tw-text-green-600 tw-font-medium">{{ dashboardData.subCategories.active }}</span>
+            <span class="tw-mx-1 tw-text-gray-500">active,</span>
+            <span class="tw-text-red-600 tw-font-medium">{{ dashboardData.subCategories.inactive }}</span>
+            <span class="tw-ml-1 tw-text-gray-500">inactive</span>
+          </div>
+        </div>
+
+        <!-- Services Card -->
+        <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-indigo-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div>
+              <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Services</p>
+              <p class="tw-text-2xl tw-font-bold tw-text-gray-900">{{ dashboardData.services.total }}</p>
+            </div>
+            <div class="tw-p-3 tw-bg-indigo-100 tw-rounded-full">
+              <i class="ph ph-gear tw-text-2xl tw-text-indigo-600"></i>
+            </div>
+          </div>
+          <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            Total available services
+          </div>
+        </div>
+      </div>
+
+      
+
+      <!-- Quick Actions Section -->
+      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-lightning tw-text-yellow-600 tw-mr-2"></i>
+          Quick Actions
+        </h3>
+        <div class="tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 lg:tw-grid-cols-6 tw-gap-4">
+          <button (click)="navigateToRegister()" 
+                  class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-blue-50 hover:tw-border-blue-300 tw-transition-colors tw-transform hover:tw-scale-105">
+            <i class="ph ph-user-plus tw-text-2xl tw-text-blue-600 tw-mb-2"></i>
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Add User</span>
+          </button>
+          <button (click)="navigateToVideos()" 
+                  class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-green-50 hover:tw-border-green-300 tw-transition-colors tw-transform hover:tw-scale-105">
+            <i class="ph ph-video tw-text-2xl tw-text-green-600 tw-mb-2"></i>
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Add Video</span>
+          </button>
+          <button (click)="navigateToCategories()" 
+                  class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-purple-50 hover:tw-border-purple-300 tw-transition-colors tw-transform hover:tw-scale-105">
+            <i class="ph ph-squares-four tw-text-2xl tw-text-purple-600 tw-mb-2"></i>
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Add Category</span>
+          </button>
+          <button (click)="navigateToSubCategories()" 
+                  class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-orange-50 hover:tw-border-orange-300 tw-transition-colors tw-transform hover:tw-scale-105">
+            <i class="ph ph-grid-four tw-text-2xl tw-text-orange-600 tw-mb-2"></i>
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Add Sub Category</span>
+          </button>
+          <button (click)="navigateToServices()" 
+                  class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-indigo-50 hover:tw-border-indigo-300 tw-transition-colors tw-transform hover:tw-scale-105">
+            <i class="ph ph-gear tw-text-2xl tw-text-indigo-600 tw-mb-2"></i>
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Manage Services</span>
+          </button>
+          <button (click)="navigateToUsers()" 
+                  class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-slate-50 hover:tw-border-slate-300 tw-transition-colors tw-transform hover:tw-scale-105">
+            <i class="ph ph-users tw-text-2xl tw-text-slate-600 tw-mb-2"></i>
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">Manage Users</span>
+          </button>
+        </div>
+      </div>
+
+    
+    </div>
+
+    <!-- No Data State -->
+    <div *ngIf="!dashboardData && !isLoading" class="tw-text-center tw-py-12">
+      <i class="ph ph-chart-bar tw-text-6xl tw-text-gray-300 tw-mb-4"></i>
+      <p class="tw-text-gray-500 tw-text-lg">Unable to load dashboard data</p>
+      <button (click)="refreshData()" 
+              class="tw-mt-4 tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors">
+        Try Again
+      </button>
+    </div>
+    
+  </div>
+</main>

@@ -1,0 +1,15 @@
+<!-- app.component.html -->
+<div class="tw-min-h-screen tw-flex tw-flex-col tw-bg-gray-50">
+  <!-- Header -->
+  <app-header [isCollapsed]="isSidebarCollapsed"></app-header>
+
+  <div class="tw-flex tw-flex-1 tw-overflow-hidden">
+    <!-- Sidebar -->
+    <app-sidebar [isCollapsed]="isSidebarCollapsed"></app-sidebar>
+
+    <!-- Main Content Area -->
+    <main class="tw-flex-1 tw-overflow-auto tw-mt-[50px]">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

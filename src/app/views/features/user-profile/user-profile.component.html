@@ -1,0 +1,257 @@
+<main
+  [class]="
+    'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto ' +
+    (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')
+  "
+>
+  <div class="tw-flex tw-items-center tw-justify-center tw-p-4 tw-min-h-[80vh]">
+    <div class="tw-w-full tw-max-w-4xl">
+      <div
+        class="tw-rounded-2xl tw-backdrop-blur-sm tw-border tw-border-gray-300 tw-overflow-hidden tw-transform tw-transition-all tw-duration-300 tw-shadow-cyan-400 tw-bg-white"
+      >
+        <div
+          [class]="
+            'tw-px-8 tw-pt-8 tw-pb-1 tw-text-left tw-border-b-2 ' +
+            currentTheme.secondary
+          "
+        >
+          <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2">
+            Admin Profile
+          </h2>
+          <p [class]="'tw-text-gray-600 tw-text-sm' + currentTheme.secondary">
+            Update Your Profile And Keep Your Account Secure
+          </p>
+        </div>
+
+        <!-- Profile Image Section -->
+        <div class="tw-flex tw-justify-center tw-pt-8">
+          <div class="tw-relative">
+            <img
+              [src]="
+                previewAvatar
+                  ? previewAvatar
+                  : getImageUrl(admin.profilePic || '')
+              "
+              [alt]="admin.name || 'Profile'"
+              class="tw-w-28 tw-h-28 tw-rounded-full tw-object-cover tw-border-4 tw-border-blue-100 tw-shadow-lg"
+            />
+            
+            <!-- Camera icon for image upload - only visible in edit mode -->
+            <label
+              *ngIf="isEditMode"
+              [class]="
+                'tw-absolute tw-bottom-0 tw-right-0 tw-text-white tw-rounded-full tw-px-2 tw-py-1 tw-w-8 tw-h-8 tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-shadow-lg tw-transition-all tw-duration-200 hover:tw-scale-110 ' +
+                currentTheme.primary
+              "
+              title="Change Profile Picture"
+            >
+              <input
+                type="file"
+                accept="image/*"
+                class="tw-hidden"
+                (change)="onAvatarChange($event)"
+              />
+              <i class="ph ph-camera tw-text-sm"></i>
+            </label>
+            
+            <!-- Edit indicator when not in edit mode -->
+            <div
+              *ngIf="!isEditMode"
+              class="tw-absolute tw-bottom-0 tw-right-0 tw-bg-gray-500 tw-text-white tw-rounded-full tw-px-2 tw-py-1 tw-w-8 tw-h-8 tw-flex tw-items-center tw-justify-center tw-text-xs"
+              title="Click Edit Profile to change picture"
+            >
+              <i class="ph ph-lock tw-text-sm"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tw-text-center tw-mt-2 tw-pb-4">
+          <p class="tw-text-sm tw-text-gray-600 tw-font-medium">
+            {{ isEditMode ? 'Click camera icon to change avatar' : admin.name || 'Admin' }}
+          </p>
+        </div>
+
+        <div class="tw-px-8 tw-pb-8 tw-pt-8">
+          <!-- Loading Indicator -->
+          <div *ngIf="isLoading" class="tw-flex tw-justify-center tw-items-center tw-py-8">
+            <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-500"></div>
+            <span class="tw-ml-2 tw-text-gray-600">Loading profile...</span>
+          </div>
+
+          <form
+            *ngIf="!isLoading"
+            class="tw-space-y-6"
+            (ngSubmit)="onSubmit()"
+            [formGroup]="profileForm"
+          >
+            <!-- Grid Row: Name & Mobile -->
+            <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
+              <!-- Name -->
+              <div class="tw-space-y-2">
+                <label
+                  class="tw-text-[17px] tw-font-medium tw-text-gray-700 tw-block"
+                >
+                  Name
+                </label>
+                <div class="tw-relative">
+                  <div
+                    class="tw-absolute tw-inset-y-0 tw-pl-3 tw-flex tw-pointer-events-none"
+                  >
+                    <i
+                      class="ph ph-identification-card tw-text-gray-400 tw-text-lg tw-pt-2"
+                    ></i>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter Your Name"
+                    formControlName="name"
+                    [class]="
+                      'tw-w-full tw-pl-10 tw-pr-12 tw-py-2 tw-border tw-rounded-xl tw-text-sm tw-transition-all tw-duration-200 ' +
+                      currentTheme.name +
+                      '-200 focus:tw-border-' +
+                      currentTheme.name +
+                      '-400 ' +
+                      (profileForm.get('name')?.disabled ? 'tw-bg-gray-100 tw-cursor-not-allowed' : 'tw-bg-white')
+                    "
+                  />
+                </div>
+                <div *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" class="tw-text-red-500 tw-text-xs tw-mt-1">
+                  Name is required (minimum 3 characters)
+                </div>
+              </div>
+
+              <!-- Mobile -->
+              <div class="tw-space-y-2">
+                <label
+                  class="tw-text-[17px] tw-font-medium tw-text-gray-700 tw-block"
+                >
+                  Mobile
+                </label>
+                <div class="tw-relative">
+                  <div
+                    class="tw-absolute tw-inset-y-0 tw-pl-3 tw-flex tw-pointer-events-none"
+                  >
+                    <i
+                      class="ph ph-device-mobile-speaker tw-text-gray-400 tw-text-lg tw-pt-2"
+                    ></i>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter Your Mobile No"
+                    formControlName="mobile"
+                    [class]="
+                      'tw-w-full tw-pl-10 tw-pr-12 tw-py-2 tw-border tw-rounded-xl tw-text-sm tw-transition-all tw-duration-200 ' +
+                      currentTheme.name +
+                      '-200 focus:tw-border-' +
+                      currentTheme.name +
+                      '-400 ' +
+                      (profileForm.get('mobile')?.disabled ? 'tw-bg-gray-100 tw-cursor-not-allowed' : 'tw-bg-white')
+                    "
+                  />
+                </div>
+                <div *ngIf="profileForm.get('mobile')?.invalid && profileForm.get('mobile')?.touched" class="tw-text-red-500 tw-text-xs tw-mt-1">
+                  Valid mobile number is required (10 digits)
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Full Width -->
+            <div class="tw-space-y-2">
+              <label
+                class="tw-text-[17px] tw-font-medium tw-text-gray-700 tw-block"
+              >
+                Email
+              </label>
+              <div class="tw-relative">
+                <div
+                  class="tw-absolute tw-inset-y-0 tw-pl-3 tw-flex tw-pointer-events-none"
+                >
+                  <i
+                    class="ph ph-envelope-simple tw-text-gray-400 tw-text-lg tw-pt-2"
+                  ></i>
+                </div>
+                <input
+                  type="email"
+                  placeholder="Enter Your Email"
+                  formControlName="email"
+                  [class]="
+                    'tw-w-full tw-pl-10 tw-pr-12 tw-py-2 tw-border tw-rounded-xl tw-text-sm tw-transition-all tw-duration-200 ' +
+                    currentTheme.name +
+                    '-200 focus:tw-border-' +
+                    currentTheme.name +
+                    '-400 ' +
+                    (profileForm.get('email')?.disabled ? 'tw-bg-gray-100 tw-cursor-not-allowed' : 'tw-bg-white')
+                  "
+                />
+              </div>
+              <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="tw-text-red-500 tw-text-xs tw-mt-1">
+                Valid email address is required
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="tw-pt-4 tw-flex tw-gap-4">
+              <!-- Edit/Update Button -->
+              <button 
+                *ngIf="!isEditMode" 
+                type="button" 
+                (click)="toggleEditMode()"
+                [class]="'tw-btn-save'"
+              >
+                <i class="ph ph-pencil tw-text-xl tw-me-1"></i>
+                Edit Profile
+              </button>
+
+              <button 
+                *ngIf="isEditMode" 
+                type="submit" 
+                [disabled]="profileForm.invalid || isLoading"
+                [class]="'tw-btn-save ' + (profileForm.invalid || isLoading ? 'tw-opacity-50 tw-cursor-not-allowed' : '')"
+              >
+                <i class="ph ph-floppy-disk tw-text-xl tw-me-1"></i>
+                Update Profile
+              </button>
+
+              <!-- Cancel/Reset Button -->
+              <button
+                *ngIf="isEditMode"
+                type="button"
+                (click)="toggleEditMode()"
+                class="tw-btn-secondary"
+              >
+                <i class="ph ph-x tw-text-xl tw-me-1"></i>
+                Cancel
+              </button>
+
+              <button
+                *ngIf="!isEditMode"
+                type="button"
+                (click)="loadUserProfile()"
+                class="tw-btn-secondary"
+              >
+                <i class="ph ph-arrows-clockwise tw-text-xl tw-me-1"></i>
+                Refresh
+              </button>
+            </div>
+
+            <!-- Gradient Line -->
+            <div
+              class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-1 tw-bg-gradient-to-r"
+              [ngClass]="currentTheme.primaryGradientFrom + ' to-white'"
+            ></div>
+
+            <!-- Footer -->
+            <div class="tw-text-center tw-mt-6">
+              <p class="tw-text-sm tw-text-gray-600">
+                Need help?
+                <a href="#" [class]="'tw-font-medium ' + currentTheme.name">
+                  Contact Support
+                </a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

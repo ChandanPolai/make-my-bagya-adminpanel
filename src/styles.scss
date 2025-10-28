@@ -1,0 +1,198 @@
+@use "sass:color";
+$primary: #09af72;
+$save: #243a65;
+
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+//ng select
+.ng-select {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  font-size: 14px;
+  color: #6d6d6e;
+  border-radius: 0.375rem;
+  font-weight: 400;
+}
+
+.ng-select.ng-select-focused .ng-select-container {
+  border: 1px solid $primary !important;
+  outline: none !important;
+}
+
+.ng-select .ng-dropdown-panel .ng-option.ng-option-selected {
+  background-color: color.adjust($save, $lightness: 66%) !important;
+  color: #000;
+}
+
+.ng-select .ng-dropdown-panel .ng-option.ng-option-marked {
+  background-color:color.adjust($save, $lightness: 71%) !important;
+  color: #000;
+}
+
+.ng-select .ng-dropdown-panel .ng-option:hover {
+  background-color: color.adjust($save, $lightness: 69%) !important;
+  color: #000;
+}
+
+
+
+// .custom-scrollbar::-webkit-scrollbar {
+//   width: 8px;
+// }
+
+// .custom-scrollbar::-webkit-scrollbar-track {
+//   background: #f1f5f9;
+// }
+
+// .custom-scrollbar::-webkit-scrollbar-thumb {
+//   background: #cbd5e1;
+//   border-radius: 4px;
+// }
+
+// .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+//   background: #94a3b8;
+// }
+
+/* Fixed header table */
+// .table-container {
+//   max-height: calc(100vh - 300px);
+//   overflow-y: auto;
+// }
+
+
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Define CSS custom properties for each theme */
+html.tw-bg-admin-blue {
+  --theme-color: #007bff;
+}
+html.tw-bg-admin-green {
+  --theme-color: #28a745;
+}
+html.tw-bg-admin-purple {
+  --theme-color: #6f42c1;
+}
+html.tw-bg-admin-orange {
+  --theme-color: #fd7e14;
+}
+html.tw-bg-admin-red {
+  --theme-color: #dc3545;
+}
+html.tw-bg-admin-yellow {
+  --theme-color: #ffc107;
+}
+
+/* Base pagination styles - no background for non-active */
+html[class*="tw-bg-admin-"] .pagination li a {
+  @apply tw-border tw-border-gray-300 tw-rounded-md tw-px-3 tw-py-1 tw-text-sm tw-transition;
+  background-color: transparent;
+  color: var(--theme-color, #007bff); /* Use theme color with fallback */
+}
+
+/* ACTIVE page: gets theme background + white text */
+html[class*="tw-bg-admin-"] .pagination li.active a {
+  background-color: var(--theme-color, #007bff);
+  color: white;
+  // border-color: var(--theme-color, #007bff);
+}
+
+/* Hover effect for non-active pages */
+html[class*="tw-bg-admin-"] .pagination li:not(.active) a:hover {
+  @apply tw-bg-gray-100;
+  // border-color: var(--theme-color, #007bff);
+}
+
+/* Optional: Focus states for accessibility */
+html[class*="tw-bg-admin-"] .pagination li a:focus {
+  outline: 2px solid var(--theme-color, #007bff);
+  outline-offset: 2px;
+}
+
+/* Disabled state styling */
+html[class*="tw-bg-admin-"] .pagination li.disabled a {
+  @apply tw-text-gray-400 tw-cursor-not-allowed;
+  color: #6c757d !important;
+}
+
+html[class*="tw-bg-admin-"] .pagination li.disabled a:hover {
+  background-color: transparent;
+  // border-color: #dee2e6;
+}
+
+
+
+.tw-table-container {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.tw-table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+}
+
+.tw-thead {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tw-cell {
+  padding: 0.875rem 1rem;
+}
+
+.tw-tbody-tr {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.tw-tbody-tr:last-child {
+  border-bottom: none;
+}
+
+.tw-btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: white;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.tw-btn-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.tw-btn-view:hover {
+  background-color: #eff6ff;
+  color: #3b82f6;
+  border-color: #bfdbfe;
+}
+
+.tw-btn-download:hover {
+  background-color: #f0fdf4;
+  color: #22c55e;
+  border-color: #bbf7d0;
+}
+
+.tw-btn-delete:hover {
+  background-color: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+}

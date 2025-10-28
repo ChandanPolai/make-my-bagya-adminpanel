@@ -1,0 +1,105 @@
+<!-- sidebar.component.html -->
+<div
+  [class]="'tw-fixed tw-left-0 tw-top-0 tw-h-full tw-transition-all tw-duration-300 tw-ease-in-out tw-z-40 tw-bg-slate-900 tw-border-r tw-border-slate-700 tw-shadow-lg ' + (isCollapsed ? 'tw-w-16' : 'tw-w-64')">
+
+  <!-- Header Section -->
+  <div
+    class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-border-b tw-border-slate-700 tw-transition-all tw-duration-300">
+    <div class="tw-flex tw-items-center tw-space-x-3 tw-transition-all tw-duration-300"
+      [class.tw-opacity-0]="isCollapsed" [class.tw-scale-95]="isCollapsed" *ngIf="!isCollapsed">
+      <div class="tw-w-8 tw-h-8 tw-rounded tw-flex tw-items-center tw-justify-center">
+        <!-- <i class="ph-code tw-text-white tw-text-sm"></i> -->
+        <img src="https://ndvibe.in/wp-content/uploads/2022/12/cropped-logo-1.jpg" class="h-100 w-100" alt="">
+      </div>
+      <div class="tw-transition-all tw-duration-300">
+        <h1 class="tw-text-lg tw-font-semibold tw-text-white tw-mb-0">ND VIBE</h1>
+        <p class="tw-text-xs tw-text-slate-400 tw-mb-0">Admin Panel</p>
+      </div>
+    </div>
+    <div *ngIf="isCollapsed"
+      class="tw-w-8 tw-h-8 tw-rounded tw-bg-blue-400/50 tw-flex tw-items-center tw-justify-center">
+      <i class="ph ph-code tw-text-white tw-text-sm"></i>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="tw-mt-4 tw-px-3">
+    <div class="tw-space-y-1">
+      <div *ngFor="let item of menuItems; let i = index" class="tw-relative tw-transition-all tw-duration-200">
+        <a *ngIf="!item.children" [routerLink]="item.route" routerLinkActive="active" [class]="'tw-group tw-flex tw-items-center tw-px-3 tw-py-2.5 tw-text-xs tw-font-medium tw-rounded-md tw-cursor-pointer tw-transition-all tw-duration-200 tw-no-underline ' + 
+                   (activeMenuItem === item.id ? 
+                    'tw-bg-blue-400/50 tw-text-white tw-shadow-md' : 
+                    'tw-text-slate-300 hover:tw-bg-slate-800 hover:tw-text-white') +  
+                   (item.id === 'sign-out' ? ' tw-text-red-400 hover:tw-bg-red-900/20 hover:tw-text-red-300' : '')"
+          (click)="item.id === 'sign-out' ? _logoutUser() : selectMenuItem(item.id)">
+
+          <i [class]="item.icon + ' tw-flex-shrink-0 tw-text-base tw-transition-colors tw-duration-200'"></i>
+
+          <span *ngIf="!isCollapsed" class="tw-ml-3 tw-flex-1 tw-transition-all tw-duration-200">
+            {{ item.label }}
+          </span>
+
+          <!-- Badge -->
+          <span *ngIf="!isCollapsed && item.badge"
+            class="tw-ml-auto tw-px-2 tw-py-0.5 tw-text-xs tw-rounded-full tw-bg-blue-100 tw-text-blue-900 tw-font-medium">
+            {{ item.badge }}
+          </span>
+        </a>
+
+        <!-- Parent Menu Item with children -->
+        <div *ngIf="item.children" [class]="'tw-group tw-flex tw-items-center tw-px-3 tw-py-2.5 tw-text-xs tw-font-medium tw-rounded-md tw-cursor-pointer tw-transition-all tw-duration-200 ' + 
+                     (activeMenuItem === item.id ? 
+                      'tw-bg-slate-700/50 tw-text-white' : 
+                      'tw-text-slate-300 hover:tw-bg-slate-800 hover:tw-text-white')" (click)="toggleSubmenu(item.id)">
+
+          <i [class]="item.icon + ' tw-flex-shrink-0 tw-text-base tw-transition-colors tw-duration-200'"></i>
+
+          <span *ngIf="!isCollapsed" class="tw-ml-3 tw-flex-1">
+            {{ item.label }}
+          </span>
+
+          <!-- Submenu Arrow -->
+          <i *ngIf="!isCollapsed && item.children" [class]="'tw-ml-auto ph-caret-down tw-text-xs tw-transition-transform tw-duration-200 ' + 
+                      (expandedMenus.has(item.id) ? 'tw-rotate-180' : '')"></i>
+        </div>
+
+        <!-- Submenu -->
+        <div *ngIf="item.children && !isCollapsed"
+          class="tw-overflow-hidden tw-transition-all tw-duration-300 tw-ease-in-out"
+          [class.tw-max-h-0]="!expandedMenus.has(item.id)" [class.tw-max-h-96]="expandedMenus.has(item.id)"
+          [class.tw-opacity-0]="!expandedMenus.has(item.id)" [class.tw-opacity-100]="expandedMenus.has(item.id)">
+
+          <div class="tw-mt-1 tw-ml-6 tw-space-y-1 tw-border-l tw-border-slate-600 tw-pl-4">
+            <a *ngFor="let child of item.children" [routerLink]="child.route" routerLinkActive="active"
+              class="tw-no-underline tw-flex tw-items-center tw-px-3 tw-py-2 tw-text-xs tw-rounded-md tw-cursor-pointer tw-transition-all tw-duration-200"
+              [ngClass]="activeMenuItem === child.id ? 
+                         'tw-bg-slate-700 tw-text-white tw-font-medium' : 
+                         'tw-text-slate-400 hover:tw-bg-slate-800 hover:tw-text-slate-200'"
+              (click)="selectMenuItem(child.id)">
+
+              <i [class]="child.icon + ' tw-text-sm tw-transition-colors tw-duration-200'"></i>
+              <span class="tw-ml-3">{{ child.label }}</span>
+
+              <!-- Active indicator -->
+              <div *ngIf="activeMenuItem === child.id"
+                class="tw-ml-auto tw-w-1.5 tw-h-1.5 tw-bg-blue-400 tw-rounded-full">
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Footer/User Section -->
+  <!-- <div class="tw-absolute tw-bottom-4 tw-left-3 tw-right-3" *ngIf="!isCollapsed">
+    <div class="tw-flex tw-items-center tw-px-3 tw-py-2 tw-bg-gray-50 tw-rounded-md">
+      <div class="tw-w-6 tw-h-6 tw-bg-gray-300 tw-rounded-full tw-flex tw-items-center tw-justify-center">
+        <i class="ph-user tw-text-gray-600 tw-text-xs"></i>
+      </div>
+      <div class="tw-ml-3 tw-flex-1 tw-min-w-0">
+        <p class="tw-text-xs tw-font-medium tw-text-gray-900 tw-truncate">Admin User</p>
+      </div>
+    </div>
+  </div> -->
+</div>
