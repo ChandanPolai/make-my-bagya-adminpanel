@@ -30,7 +30,12 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+               {
+    "glob": "**/*",
+    "input": "src/assets",
+    "output": "assets"
+  }
             ],
             "allowedCommonJsDependencies": ["dayjs","sweetalert2"],
             "styles": [
@@ -99,7 +104,12 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+               {
+    "glob": "**/*",
+    "input": "src/assets",
+    "output": "assets"
+  }
             ],
             "styles": ["src/styles.scss"],
             "scripts": []
