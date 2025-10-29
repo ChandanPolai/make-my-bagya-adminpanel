@@ -186,7 +186,7 @@ export class ServicesComponent implements OnInit {
           },
           error: (err) => {
             this.isLoading = false;
-            swalHelper.messageToast(err?.error?.message ?? 'Failed to delete service.', 'error');
+            swalHelper.messageToast(err?.message ?? 'Failed to delete service.', 'error');
           }
         });
       }
@@ -240,7 +240,7 @@ export class ServicesComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          swalHelper.messageToast(err?.error?.message ?? 'Failed to create service.', 'error');
+          swalHelper.messageToast(err?.message ?? 'Failed to create service.', 'error');
         }
       });
     } else if (this.mode === 'edit' && this.currentServiceId) {
@@ -255,7 +255,7 @@ export class ServicesComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          swalHelper.messageToast(err?.error?.message ?? 'Failed to update service.', 'error');
+          swalHelper.messageToast(err?.message ?? 'Failed to update service.', 'error');
         }
       });
     }
