@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  baseURL: 'https://ndvibe.itfuturz.in',
-  imageUrl: 'https://ndvibe.itfuturz.in/',
+  baseURL: 'makemybhagya.itfuturz.in',
+  imageUrl: 'makemybhagya.itfuturz.in/',
   route:'admin'
 }

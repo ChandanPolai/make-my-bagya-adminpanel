@@ -1,6 +1,13 @@
+// export const environment = {
+//   production: false,
+//   baseURL: 'http://localhost:7026',
+//   imageUrl: 'http://localhost:7026/',
+//   route: 'admin'
+// };
+
 export const environment = {
   production: false,
-  baseURL: 'http://localhost:2050',
-  imageUrl: 'http://localhost:2050/',
-  route: 'admin'
-};
+  baseURL: 'makemybhagya.itfuturz.in',
+  imageUrl: 'makemybhagya.itfuturz.in/',
+  route:'admin'
+}
