@@ -1,3 +1,13 @@
+/* Active Link Styling - BLACK TEXT */
 .active-link {
-  @apply tw-bg-gray-100 tw-font-semibold tw-text-gray-900;
+  @apply tw-bg-gradient-to-r tw-from-amber-400 tw-to-yellow-500 tw-font-bold tw-border-l-4 tw-border-amber-600 tw-text-gray-900;
+  color: #111827 !important;
+}
+
+.active-link span {
+  color: #111827 !important;
+}
+
+.active-link i {
+  color: #111827 !important;
 }

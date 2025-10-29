@@ -1,14 +1,20 @@
 <main [class]="
-    'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto tw-min-h-screen ' +
+    'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto tw-min-h-screen tw-relative ' +
     (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')
   ">
-  <div class="tw-p-4 sm:tw-p-6 tw-bg-gray-50 tw-min-h-full">
+  
+  <!-- Background Watermark -->
+  <div class="dashboard-watermark">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUrakRDANbeWZlbwBE33hFLh_S6zj-4cOkzQ&s" alt="">
+  </div>
+
+  <div class="tw-p-4 sm:tw-p-6 tw-bg-gradient-to-br tw-from-gray-50 tw-via-amber-50/30 tw-to-purple-50/20 tw-min-h-full tw-relative tw-z-10">
     
     <!-- Header Section -->
     <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-justify-between tw-mb-6 tw-gap-3">
       <div>
-        <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900 tw-uppercase">Money Switch Dashboard</h2>
-        <p class="tw-text-gray-600 tw-mt-1">Overview of users and earnings statistics</p>
+        <h2 class="tw-text-2xl tw-font-bold tw-bg-gradient-to-r tw-from-indigo-900 tw-via-purple-800 tw-to-indigo-900 tw-bg-clip-text tw-text-transparent tw-uppercase">Money Switch Dashboard</h2>
+        <p class="tw-text-gray-600 tw-mt-1 tw-font-medium">Overview of users and earnings statistics</p>
       </div>
       <div class="tw-flex tw-gap-2">
         <!-- Date Picker -->
@@ -16,12 +22,12 @@
           type="date" 
           [value]="selectedDate | date:'yyyy-MM-dd'" 
           (change)="onDateChange($event)"
-          class="tw-bg-white tw-border tw-border-gray-300 tw-text-gray-900 tw-px-4 tw-py-2 tw-rounded-md focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent"
+          class="tw-bg-white tw-border-2 tw-border-amber-300 tw-text-gray-900 tw-px-4 tw-py-2 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-amber-400 focus:tw-border-amber-400 tw-shadow-md"
         />
         <!-- Refresh Button -->
         <button (click)="refreshData()" 
                 [disabled]="isLoading"
-                class="tw-bg-blue-600 hover:tw-bg-blue-700 disabled:tw-bg-blue-400 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+                class="tw-bg-gradient-to-r tw-from-amber-500 tw-to-yellow-500 hover:tw-from-amber-600 hover:tw-to-yellow-600 disabled:tw-from-amber-300 disabled:tw-to-yellow-300 tw-text-indigo-950 tw-font-bold tw-px-4 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-transition-all tw-shadow-md hover:tw-shadow-lg">
           <i [class]="isLoading ? 'ph ph-spinner tw-animate-spin' : 'ph ph-arrow-clockwise'" class="tw-text-lg"></i>
           <span class="tw-hidden sm:tw-inline">{{ isLoading ? 'Loading...' : 'Refresh' }}</span>
         </button>
@@ -30,8 +36,8 @@
 
     <!-- Loading State -->
     <div *ngIf="isLoading && !dashboardData" class="tw-flex tw-items-center tw-justify-center tw-py-12">
-      <div class="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-blue-600"></div>
-      <span class="tw-ml-3 tw-text-lg tw-text-gray-600">Loading dashboard data...</span>
+      <div class="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-4 tw-border-amber-400 tw-border-t-transparent"></div>
+      <span class="tw-ml-3 tw-text-lg tw-text-gray-700 tw-font-semibold">Loading dashboard data...</span>
     </div>
 
     <!-- Dashboard Content -->
@@ -39,72 +45,72 @@
       
       <!-- Users Statistics Section -->
       <div>
-        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
-          <i class="ph ph-users tw-text-blue-600 tw-mr-2"></i>
+        <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-users tw-text-amber-500 tw-mr-2 tw-text-xl"></i>
           User Statistics
         </h3>
         <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4 lg:tw-gap-6">
           
           <!-- Total Users Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-blue-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-blue-100 tw-p-6 tw-border-l-4 tw-border-blue-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Total Users</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ formatNumber(dashboardData.users.totalUsers) }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">Total Users</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">{{ formatNumber(dashboardData.users.totalUsers) }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-blue-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-blue-100 tw-to-blue-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-users tw-text-2xl tw-text-blue-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               All registered users
             </div>
           </div>
 
           <!-- Today Users Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-green-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-green-100 tw-p-6 tw-border-l-4 tw-border-green-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Today's Users</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ dashboardData.users.todayUsers }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">Today's Users</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">{{ dashboardData.users.todayUsers }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-green-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-green-100 tw-to-green-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-user-plus tw-text-2xl tw-text-green-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               New users today
             </div>
           </div>
 
           <!-- Last 7 Days Users Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-purple-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-purple-100 tw-p-6 tw-border-l-4 tw-border-purple-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Last 7 Days</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ dashboardData.users.last7DaysUsers }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">Last 7 Days</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">{{ dashboardData.users.last7DaysUsers }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-purple-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-purple-100 tw-to-purple-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-calendar tw-text-2xl tw-text-purple-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               Users in last 7 days
             </div>
           </div>
 
           <!-- Current Month Users Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-orange-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-orange-100 tw-p-6 tw-border-l-4 tw-border-orange-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">This Month</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ dashboardData.users.currentMonthUsers }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">This Month</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">{{ dashboardData.users.currentMonthUsers }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-orange-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-orange-100 tw-to-orange-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-calendar-check tw-text-2xl tw-text-orange-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               Users this month
             </div>
           </div>
@@ -113,72 +119,72 @@
 
       <!-- Earnings Statistics Section -->
       <div>
-        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
-          <i class="ph ph-currency-inr tw-text-green-600 tw-mr-2"></i>
+        <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-currency-inr tw-text-amber-500 tw-mr-2 tw-text-xl"></i>
           Earnings Statistics
         </h3>
         <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4 lg:tw-gap-6">
           
           <!-- Total Earnings Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-emerald-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-emerald-100 tw-p-6 tw-border-l-4 tw-border-emerald-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Total Earnings</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">₹{{ formatEarnings(dashboardData.earnings.totalEarnings) }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">Total Earnings</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">₹{{ formatEarnings(dashboardData.earnings.totalEarnings) }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-emerald-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-emerald-100 tw-to-emerald-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-wallet tw-text-2xl tw-text-emerald-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               All-time earnings
             </div>
           </div>
 
           <!-- Today Earnings Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-teal-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-teal-100 tw-p-6 tw-border-l-4 tw-border-teal-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Today's Earnings</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">₹{{ formatEarnings(dashboardData.earnings.todayEarnings) }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">Today's Earnings</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">₹{{ formatEarnings(dashboardData.earnings.todayEarnings) }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-teal-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-teal-100 tw-to-teal-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-currency-circle-dollar tw-text-2xl tw-text-teal-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               Earnings today
             </div>
           </div>
 
           <!-- Last 7 Days Earnings Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-cyan-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-cyan-100 tw-p-6 tw-border-l-4 tw-border-cyan-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">Last 7 Days</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">₹{{ formatEarnings(dashboardData.earnings.last7DaysEarnings) }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">Last 7 Days</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">₹{{ formatEarnings(dashboardData.earnings.last7DaysEarnings) }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-cyan-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-cyan-100 tw-to-cyan-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-chart-line-up tw-text-2xl tw-text-cyan-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               Earnings in last 7 days
             </div>
           </div>
 
           <!-- Current Month Earnings Card -->
-          <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border-l-4 tw-border-indigo-500 tw-transform tw-transition-transform hover:tw-scale-105">
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-indigo-100 tw-p-6 tw-border-l-4 tw-border-indigo-500 tw-transform tw-transition-all tw-duration-300 hover:tw-scale-105 hover:tw-shadow-xl">
             <div class="tw-flex tw-items-center tw-justify-between">
               <div>
-                <p class="tw-text-sm tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wide">This Month</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-gray-900">₹{{ formatEarnings(dashboardData.earnings.currentMonthEarnings) }}</p>
+                <p class="tw-text-sm tw-font-bold tw-text-gray-600 tw-uppercase tw-tracking-wide">This Month</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-indigo-900 tw-mt-2">₹{{ formatEarnings(dashboardData.earnings.currentMonthEarnings) }}</p>
               </div>
-              <div class="tw-p-3 tw-bg-indigo-100 tw-rounded-full">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-indigo-100 tw-to-indigo-200 tw-rounded-xl tw-shadow-md">
                 <i class="ph ph-trend-up tw-text-2xl tw-text-indigo-600"></i>
               </div>
             </div>
-            <div class="tw-mt-4 tw-text-sm tw-text-gray-500">
+            <div class="tw-mt-4 tw-text-sm tw-text-gray-500 tw-font-medium">
               Earnings this month
             </div>
           </div>
@@ -186,43 +192,48 @@
       </div>
 
       <!-- Quick Actions Section -->
-      <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6">
-        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
-          <i class="ph ph-lightning tw-text-yellow-600 tw-mr-2"></i>
+      <div class="tw-bg-white tw-rounded-2xl tw-shadow-lg tw-shadow-amber-100/50 tw-p-6 tw-border tw-border-amber-100">
+        <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph ph-lightning tw-text-amber-500 tw-mr-2 tw-text-xl"></i>
           Quick Actions
         </h3>
-       <div class="tw-flex tw-justify-center">
-  <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-3 tw-gap-6">
-    <button (click)="navigateToUsers()" 
-      class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-blue-50 hover:tw-border-blue-300 tw-transition-all tw-transform hover:tw-scale-105">
-      <i class="ph ph-users tw-text-2xl tw-text-blue-600 tw-mb-2"></i>
-      <span class="tw-text-sm tw-font-medium tw-text-gray-700">View Users</span>
-    </button>
+        <div class="tw-flex tw-justify-center">
+          <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-3 tw-gap-6">
+            <button (click)="navigateToUsers()" 
+              class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-6 tw-border-2 tw-border-blue-200 tw-rounded-xl hover:tw-bg-gradient-to-br hover:tw-from-blue-50 hover:tw-to-blue-100 hover:tw-border-blue-400 tw-transition-all tw-transform hover:tw-scale-105 tw-shadow-md hover:tw-shadow-lg">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-blue-100 tw-to-blue-200 tw-rounded-xl tw-mb-3">
+                <i class="ph ph-users tw-text-3xl tw-text-blue-600"></i>
+              </div>
+              <span class="tw-text-sm tw-font-bold tw-text-gray-800">View Users</span>
+            </button>
 
-    <button (click)="navigateToServices()" 
-      class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-green-50 hover:tw-border-green-300 tw-transition-all tw-transform hover:tw-scale-105">
-      <i class="ph ph-gear tw-text-2xl tw-text-green-600 tw-mb-2"></i>
-      <span class="tw-text-sm tw-font-medium tw-text-gray-700">Manage Services</span>
-    </button>
+            <button (click)="navigateToServices()" 
+              class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-6 tw-border-2 tw-border-green-200 tw-rounded-xl hover:tw-bg-gradient-to-br hover:tw-from-green-50 hover:tw-to-green-100 hover:tw-border-green-400 tw-transition-all tw-transform hover:tw-scale-105 tw-shadow-md hover:tw-shadow-lg">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-green-100 tw-to-green-200 tw-rounded-xl tw-mb-3">
+                <i class="ph ph-gear tw-text-3xl tw-text-green-600"></i>
+              </div>
+              <span class="tw-text-sm tw-font-bold tw-text-gray-800">Manage Services</span>
+            </button>
 
-    <button (click)="navigateToPaymentLogs()" 
-      class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-purple-50 hover:tw-border-purple-300 tw-transition-all tw-transform hover:tw-scale-105">
-      <i class="ph ph-receipt tw-text-2xl tw-text-purple-600 tw-mb-2"></i>
-      <span class="tw-text-sm tw-font-medium tw-text-gray-700">Payment Logs</span>
-    </button>
-  </div>
-</div>
-
+            <button (click)="navigateToPaymentLogs()" 
+              class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-6 tw-border-2 tw-border-purple-200 tw-rounded-xl hover:tw-bg-gradient-to-br hover:tw-from-purple-50 hover:tw-to-purple-100 hover:tw-border-purple-400 tw-transition-all tw-transform hover:tw-scale-105 tw-shadow-md hover:tw-shadow-lg">
+              <div class="tw-p-3 tw-bg-gradient-to-br tw-from-purple-100 tw-to-purple-200 tw-rounded-xl tw-mb-3">
+                <i class="ph ph-receipt tw-text-3xl tw-text-purple-600"></i>
+              </div>
+              <span class="tw-text-sm tw-font-bold tw-text-gray-800">Payment Logs</span>
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
 
     <!-- No Data State -->
     <div *ngIf="!dashboardData && !isLoading" class="tw-text-center tw-py-12">
-      <i class="ph ph-chart-bar tw-text-6xl tw-text-gray-300 tw-mb-4"></i>
-      <p class="tw-text-gray-500 tw-text-lg">Unable to load dashboard data</p>
+      <i class="ph ph-chart-bar tw-text-6xl tw-text-amber-300 tw-mb-4"></i>
+      <p class="tw-text-gray-600 tw-text-lg tw-font-semibold">Unable to load dashboard data</p>
       <button (click)="refreshData()" 
-              class="tw-mt-4 tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors">
+              class="tw-mt-4 tw-bg-gradient-to-r tw-from-amber-500 tw-to-yellow-500 hover:tw-from-amber-600 hover:tw-to-yellow-600 tw-text-indigo-950 tw-font-bold tw-px-6 tw-py-3 tw-rounded-lg tw-transition-all tw-shadow-md hover:tw-shadow-lg">
         Try Again
       </button>
     </div>

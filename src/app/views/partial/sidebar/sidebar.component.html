@@ -1,24 +1,23 @@
 <!-- sidebar.component.html -->
 <div
-  [class]="'tw-fixed tw-left-0 tw-top-0 tw-h-full tw-transition-all tw-duration-300 tw-ease-in-out tw-z-40 tw-bg-slate-900 tw-border-r tw-border-slate-700 tw-shadow-lg ' + (isCollapsed ? 'tw-w-16' : 'tw-w-64')">
+  [class]="'tw-fixed tw-left-0 tw-top-0 tw-h-full tw-transition-all tw-duration-300 tw-ease-in-out tw-z-40 tw-bg-gradient-to-b tw-from-indigo-950 tw-via-purple-900 tw-to-indigo-950 tw-border-r tw-border-amber-400/20 tw-shadow-2xl ' + (isCollapsed ? 'tw-w-16' : 'tw-w-64')">
 
   <!-- Header Section -->
   <div
-    class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-border-b tw-border-slate-700 tw-transition-all tw-duration-300">
+    class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-border-b tw-border-amber-400/20 tw-transition-all tw-duration-300">
     <div class="tw-flex tw-items-center tw-space-x-3 tw-transition-all tw-duration-300"
       [class.tw-opacity-0]="isCollapsed" [class.tw-scale-95]="isCollapsed" *ngIf="!isCollapsed">
-      <div class="tw-w-8 tw-h-8 tw-rounded tw-flex tw-items-center tw-justify-center">
-        <!-- <i class="ph-code tw-text-white tw-text-sm"></i> -->
-        <img src="https://t4.ftcdn.net/jpg/05/23/15/35/360_F_523153593_CNms4i1bdUF99nm0fSBZZ6VJcy6jmufG.jpg" class="h-100 w-100" alt="">
+      <div class="tw-w-10 tw-h-10 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-amber-400 tw-to-yellow-500 tw-shadow-lg tw-p-1.5">
+        <img src="https://t4.ftcdn.net/jpg/05/23/15/35/360_F_523153593_CNms4i1bdUF99nm0fSBZZ6VJcy6jmufG.jpg" class="tw-w-full tw-h-full tw-rounded tw-object-cover" alt="">
       </div>
       <div class="tw-transition-all tw-duration-300">
-        <h1 class="tw-text-lg tw-font-semibold tw-text-white tw-mb-0">Money Switch Code</h1>
-        <p class="tw-text-xs tw-text-slate-400 tw-mb-0">Admin Panel</p>
+        <h1 class="tw-text-base tw-font-bold tw-text-transparent tw-bg-gradient-to-r tw-from-amber-300 tw-via-yellow-200 tw-to-amber-300 tw-bg-clip-text tw-mb-0">Money Switch Code</h1>
+        <p class="tw-text-xs tw-text-amber-200/70 tw-mb-0 tw-font-medium">Numerology Portal</p>
       </div>
     </div>
     <div *ngIf="isCollapsed"
-      class="tw-w-8 tw-h-8 tw-rounded tw-bg-blue-400/50 tw-flex tw-items-center tw-justify-center">
-      <i class="ph ph-code tw-text-white tw-text-sm"></i>
+      class="tw-w-10 tw-h-10 tw-rounded-lg tw-bg-gradient-to-br tw-from-amber-400 tw-to-yellow-500 tw-flex tw-items-center tw-justify-center tw-shadow-lg">
+      <i class="ph ph-code tw-text-indigo-950 tw-text-base tw-font-bold"></i>
     </div>
   </div>
 
@@ -26,11 +25,11 @@
   <nav class="tw-mt-4 tw-px-3">
     <div class="tw-space-y-1">
       <div *ngFor="let item of menuItems; let i = index" class="tw-relative tw-transition-all tw-duration-200">
-        <a *ngIf="!item.children" [routerLink]="item.route" routerLinkActive="active" [class]="'tw-group tw-flex tw-items-center tw-px-3 tw-py-2.5 tw-text-xs tw-font-medium tw-rounded-md tw-cursor-pointer tw-transition-all tw-duration-200 tw-no-underline ' + 
+        <a *ngIf="!item.children" [routerLink]="item.route" routerLinkActive="active" [class]="'tw-group tw-flex tw-items-center tw-px-3 tw-py-2.5 tw-text-xs tw-font-semibold tw-rounded-lg tw-cursor-pointer tw-transition-all tw-duration-200 tw-no-underline ' + 
                    (activeMenuItem === item.id ? 
-                    'tw-bg-blue-400/50 tw-text-white tw-shadow-md' : 
-                    'tw-text-slate-300 hover:tw-bg-slate-800 hover:tw-text-white') +  
-                   (item.id === 'sign-out' ? ' tw-text-red-400 hover:tw-bg-red-900/20 hover:tw-text-red-300' : '')"
+                    'tw-bg-gradient-to-r tw-from-amber-400 tw-to-yellow-500 tw-text-indigo-950 tw-shadow-lg tw-shadow-amber-500/30' : 
+                    'tw-text-amber-100 hover:tw-bg-white/5 hover:tw-text-amber-300') +  
+                   (item.id === 'sign-out' ? ' !tw-text-red-400 hover:!tw-bg-red-900/20 hover:!tw-text-red-300' : '')"
           (click)="item.id === 'sign-out' ? _logoutUser() : selectMenuItem(item.id)">
 
           <i [class]="item.icon + ' tw-flex-shrink-0 tw-text-base tw-transition-colors tw-duration-200'"></i>
@@ -41,16 +40,16 @@
 
           <!-- Badge -->
           <span *ngIf="!isCollapsed && item.badge"
-            class="tw-ml-auto tw-px-2 tw-py-0.5 tw-text-xs tw-rounded-full tw-bg-blue-100 tw-text-blue-900 tw-font-medium">
+            class="tw-ml-auto tw-px-2 tw-py-0.5 tw-text-[10px] tw-rounded-full tw-bg-amber-400 tw-text-indigo-950 tw-font-bold tw-shadow-md">
             {{ item.badge }}
           </span>
         </a>
 
         <!-- Parent Menu Item with children -->
-        <div *ngIf="item.children" [class]="'tw-group tw-flex tw-items-center tw-px-3 tw-py-2.5 tw-text-xs tw-font-medium tw-rounded-md tw-cursor-pointer tw-transition-all tw-duration-200 ' + 
+        <div *ngIf="item.children" [class]="'tw-group tw-flex tw-items-center tw-px-3 tw-py-2.5 tw-text-xs tw-font-semibold tw-rounded-lg tw-cursor-pointer tw-transition-all tw-duration-200 ' + 
                      (activeMenuItem === item.id ? 
-                      'tw-bg-slate-700/50 tw-text-white' : 
-                      'tw-text-slate-300 hover:tw-bg-slate-800 hover:tw-text-white')" (click)="toggleSubmenu(item.id)">
+                      'tw-bg-white/5 tw-text-amber-300' : 
+                      'tw-text-amber-100 hover:tw-bg-white/5 hover:tw-text-amber-300')" (click)="toggleSubmenu(item.id)">
 
           <i [class]="item.icon + ' tw-flex-shrink-0 tw-text-base tw-transition-colors tw-duration-200'"></i>
 
@@ -69,12 +68,12 @@
           [class.tw-max-h-0]="!expandedMenus.has(item.id)" [class.tw-max-h-96]="expandedMenus.has(item.id)"
           [class.tw-opacity-0]="!expandedMenus.has(item.id)" [class.tw-opacity-100]="expandedMenus.has(item.id)">
 
-          <div class="tw-mt-1 tw-ml-6 tw-space-y-1 tw-border-l tw-border-slate-600 tw-pl-4">
+          <div class="tw-mt-1 tw-ml-6 tw-space-y-1 tw-border-l-2 tw-border-amber-400/20 tw-pl-4">
             <a *ngFor="let child of item.children" [routerLink]="child.route" routerLinkActive="active"
-              class="tw-no-underline tw-flex tw-items-center tw-px-3 tw-py-2 tw-text-xs tw-rounded-md tw-cursor-pointer tw-transition-all tw-duration-200"
+              class="tw-no-underline tw-flex tw-items-center tw-px-3 tw-py-2 tw-text-xs tw-font-medium tw-rounded-lg tw-cursor-pointer tw-transition-all tw-duration-200"
               [ngClass]="activeMenuItem === child.id ? 
-                         'tw-bg-slate-700 tw-text-white tw-font-medium' : 
-                         'tw-text-slate-400 hover:tw-bg-slate-800 hover:tw-text-slate-200'"
+                         'tw-bg-gradient-to-r tw-from-amber-400/80 tw-to-yellow-500/80 tw-text-indigo-950 tw-font-bold tw-shadow-md' : 
+                         'tw-text-amber-200 hover:tw-bg-white/5 hover:tw-text-amber-300'"
               (click)="selectMenuItem(child.id)">
 
               <i [class]="child.icon + ' tw-text-sm tw-transition-colors tw-duration-200'"></i>
@@ -82,7 +81,7 @@
 
               <!-- Active indicator -->
               <div *ngIf="activeMenuItem === child.id"
-                class="tw-ml-auto tw-w-1.5 tw-h-1.5 tw-bg-blue-400 tw-rounded-full">
+                class="tw-ml-auto tw-w-2 tw-h-2 tw-bg-amber-300 tw-rounded-full tw-shadow-lg">
               </div>
             </a>
           </div>
@@ -90,16 +89,4 @@
       </div>
     </div>
   </nav>
-
-  <!-- Footer/User Section -->
-  <!-- <div class="tw-absolute tw-bottom-4 tw-left-3 tw-right-3" *ngIf="!isCollapsed">
-    <div class="tw-flex tw-items-center tw-px-3 tw-py-2 tw-bg-gray-50 tw-rounded-md">
-      <div class="tw-w-6 tw-h-6 tw-bg-gray-300 tw-rounded-full tw-flex tw-items-center tw-justify-center">
-        <i class="ph-user tw-text-gray-600 tw-text-xs"></i>
-      </div>
-      <div class="tw-ml-3 tw-flex-1 tw-min-w-0">
-        <p class="tw-text-xs tw-font-medium tw-text-gray-900 tw-truncate">Admin User</p>
-      </div>
-    </div>
-  </div> -->
 </div>

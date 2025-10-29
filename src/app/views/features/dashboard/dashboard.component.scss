@@ -1,0 +1,32 @@
+// Dashboard Watermark - CENTER WITH LOW OPACITY
+.dashboard-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+  
+  img {
+    width: 500px;
+    height: 500px;
+    object-fit: contain;
+    opacity: 0.09;
+    filter: grayscale(10%);
+  }
+}
+
+// Responsive watermark
+@media (max-width: 1024px) {
+  .dashboard-watermark img {
+    width: 400px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-watermark img {
+    width: 300px;
+    height: 300px;
+  }
+}

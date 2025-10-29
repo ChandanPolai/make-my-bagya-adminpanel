@@ -1,0 +1,41 @@
+// Profile Watermark - LEFT SIDE
+.profile-watermark {
+  position: fixed;
+  top: 50%;
+  left: 10%; // Left side pe position
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 5;
+  
+  img {
+    width: 400px;
+    height: 400px;
+    object-fit: contain;
+    opacity: 0.09;
+    filter: grayscale(10%);
+  }
+}
+
+@media (max-width: 1024px) {
+  .profile-watermark {
+    left: 5%;
+    
+    img {
+      width: 300px;
+      height: 300px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-watermark {
+    left: 50%;
+    transform: translate(-50%, -50%); // Mobile pe center
+    
+    img {
+      width: 250px;
+      height: 250px;
+      opacity: 0.03;
+    }
+  }
+}

@@ -1,19 +1,24 @@
-<main [class]="'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto tw-min-h-screen ' + (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')">
+<main [class]="'tw-pt-4 tw-pb-4 tw-transition-all tw-duration-300 tw-overflow-auto tw-min-h-screen tw-relative ' + (isSidebarCollapsed ? ' tw-ml-16' : ' tw-ml-64')">
   
+  <!-- Background Watermark -->
+  <div class="dashboard-watermark">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUrakRDANbeWZlbwBE33hFLh_S6zj-4cOkzQ&s" alt="">
+  </div>
+
   <!-- ==================== LIST VIEW ==================== -->
-  <div *ngIf="mode === 'list'" class="tw-p-4 md:tw-p-7">
+  <div *ngIf="mode === 'list'" class="tw-p-4 md:tw-p-7 tw-relative tw-z-10 tw-bg-gradient-to-br tw-from-gray-50 tw-via-amber-50/20 tw-to-purple-50/10 tw-min-h-screen">
     
     <!-- Header Section -->
     <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-justify-between tw-mb-4 tw-gap-3">
       <div>
-        <h2 class="tw-text-xl tw-font-bold tw-text-gray-900 tw-uppercase">Services</h2>
-        <p class="tw-text-gray-600 tw-mt-1">Manage Money Switch services and pricing</p>
+        <h2 class="tw-text-xl tw-font-bold tw-bg-gradient-to-r tw-from-indigo-900 tw-via-purple-800 tw-to-indigo-900 tw-bg-clip-text tw-text-transparent tw-uppercase">Services</h2>
+        <p class="tw-text-gray-600 tw-mt-1 tw-font-medium">Manage Money Switch services and pricing</p>
       </div>
       <div class="tw-flex tw-gap-2">
         <!-- Refresh Button -->
         <button (click)="loadServices()" 
                 [disabled]="isLoading"
-                class="tw-bg-gray-600 hover:tw-bg-gray-700 disabled:tw-bg-gray-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+                class="tw-bg-gradient-to-r tw-from-indigo-600 tw-to-purple-600 hover:tw-from-indigo-700 hover:tw-to-purple-700 disabled:tw-from-gray-400 disabled:tw-to-gray-500 tw-text-white tw-font-semibold tw-px-3 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-transition-all tw-shadow-md hover:tw-shadow-lg">
           <i [class]="isLoading ? 'ph ph-spinner tw-animate-spin' : 'ph ph-arrow-clockwise'"></i>
           <span class="tw-hidden sm:tw-inline">Refresh</span>
         </button>
@@ -21,14 +26,14 @@
         <!-- Export Excel Button -->
         <button (click)="exportToExcel()" 
                 [disabled]="isLoading || services.length === 0"
-                class="tw-bg-green-600 hover:tw-bg-green-700 disabled:tw-bg-green-400 tw-text-white tw-px-3 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+                class="tw-bg-gradient-to-r tw-from-emerald-600 tw-to-green-600 hover:tw-from-emerald-700 hover:tw-to-green-700 disabled:tw-from-gray-400 disabled:tw-to-gray-500 tw-text-white tw-font-semibold tw-px-3 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-transition-all tw-shadow-md hover:tw-shadow-lg">
           <i class="ph ph-file-xls"></i>
           <span class="tw-hidden sm:tw-inline">Export Excel</span>
         </button>
         
         <!-- Create New Service Button -->
         <button (click)="createNew()" 
-                class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+                class="tw-bg-gradient-to-r tw-from-amber-500 tw-to-yellow-500 hover:tw-from-amber-600 hover:tw-to-yellow-600 tw-text-indigo-950 tw-font-bold tw-px-4 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-transition-all tw-shadow-md hover:tw-shadow-lg">
           <i class="ph ph-plus"></i>
           <span class="tw-hidden sm:tw-inline">Create Service</span>
         </button>
@@ -39,9 +44,9 @@
     <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-end tw-gap-4 tw-mb-6">
       <!-- Search -->
       <div class="tw-flex-1 tw-w-full">
-        <small class="tw-font-semibold tw-block tw-mb-1">Search</small>
+        <small class="tw-font-bold tw-block tw-mb-1 tw-text-indigo-900">Search</small>
         <input type="text" 
-               class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent" 
+               class="tw-w-full tw-px-4 tw-py-2 tw-border-2 tw-border-amber-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-amber-400 focus:tw-border-amber-400 tw-shadow-md tw-transition-all" 
                placeholder="Search by title or description" 
                [(ngModel)]="searchTerm" 
                (input)="onSearch()">
@@ -49,7 +54,7 @@
       
       <!-- Status Filter -->
       <div class="tw-w-full sm:tw-w-44">
-        <small class="tw-font-semibold tw-block tw-mb-1">Status</small>
+        <small class="tw-font-bold tw-block tw-mb-1 tw-text-indigo-900">Status</small>
         <ng-select [items]="[
                      {value: 'all', label: 'All Status'},
                      {value: 'active', label: 'Active Only'},
@@ -64,7 +69,7 @@
       
       <!-- Page Size -->
       <div class="tw-w-full sm:tw-w-44">
-        <small class="tw-font-semibold tw-block tw-mb-1">Page Size</small>
+        <small class="tw-font-bold tw-block tw-mb-1 tw-text-indigo-900">Page Size</small>
         <ng-select [items]="[10, 20, 50, 100]" 
                    [(ngModel)]="paginationConfig.itemsPerPage" 
                    (ngModelChange)="onPageSizeChange()">
@@ -74,65 +79,65 @@
     </div>
 
     <!-- Services Table -->
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
+    <div class="tw-bg-white tw-rounded-2xl tw-shadow-xl tw-shadow-purple-100/50 tw-overflow-hidden tw-border tw-border-amber-100">
       
       <!-- Desktop Table View -->
       <div class="tw-hidden md:tw-block tw-overflow-x-auto">
         <table class="tw-w-full tw-border-collapse">
-          <thead class="tw-bg-gray-50">
+          <thead class="tw-bg-gradient-to-r tw-from-indigo-900 tw-via-purple-800 tw-to-indigo-900">
             <tr>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">#</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Service</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Description</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Price</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Status</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Created</th>
-              <th class="tw-px-4 tw-py-3 tw-text-center tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase">Actions</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">#</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Service</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Description</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Price</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Status</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Created</th>
+              <th class="tw-px-4 tw-py-3 tw-text-center tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody class="tw-divide-y tw-divide-gray-200">
+          <tbody class="tw-divide-y tw-divide-amber-100">
             <!-- Loading State -->
             <tr *ngIf="isLoading">
               <td colspan="7" class="tw-px-4 tw-py-8 tw-text-center">
                 <div class="tw-flex tw-items-center tw-justify-center">
-                  <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600"></div>
-                  <span class="tw-ml-3 tw-text-gray-600">Loading services...</span>
+                  <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-4 tw-border-amber-400 tw-border-t-transparent"></div>
+                  <span class="tw-ml-3 tw-text-gray-700 tw-font-semibold">Loading services...</span>
                 </div>
               </td>
             </tr>
 
             <!-- Services Data -->
             <tr *ngFor="let service of services | paginate: paginationConfig; let i = index" 
-                class="hover:tw-bg-gray-50 tw-transition-colors">
-              <td class="tw-px-4 tw-py-4 tw-text-sm tw-text-gray-700">
+                class="hover:tw-bg-amber-50/50 tw-transition-colors">
+              <td class="tw-px-4 tw-py-4 tw-text-sm tw-text-gray-700 tw-font-semibold">
                 {{ (paginationConfig.currentPage - 1) * paginationConfig.itemsPerPage + i + 1 }}
               </td>
               <td class="tw-px-4 tw-py-4">
                 <div class="tw-flex tw-items-center tw-gap-3">
                   <img [src]="getServiceImage(service)" 
                        [alt]="service.title" 
-                       class="tw-w-12 tw-h-12 tw-rounded-lg tw-object-cover tw-border tw-border-gray-200">
+                       class="tw-w-12 tw-h-12 tw-rounded-xl tw-object-cover tw-border-2 tw-border-amber-200 tw-shadow-md">
                   <div>
-                    <div class="tw-text-sm tw-font-medium tw-text-gray-900">{{ service.title }}</div>
+                    <div class="tw-text-sm tw-font-bold tw-text-indigo-900">{{ service.title }}</div>
                   </div>
                 </div>
               </td>
               <td class="tw-px-4 tw-py-4">
-                <div class="tw-text-sm tw-text-gray-600 tw-max-w-xs">
+                <div class="tw-text-sm tw-text-gray-600 tw-max-w-xs tw-font-medium">
                   {{ service.description.length > 60 ? (service.description | slice:0:60) + '...' : service.description }}
                 </div>
               </td>
               <td class="tw-px-4 tw-py-4">
-                <div class="tw-text-sm tw-font-semibold tw-text-green-600">
+                <div class="tw-text-sm tw-font-bold tw-text-green-600">
                   {{ formatCurrency(service.price) }}
                 </div>
               </td>
               <td class="tw-px-4 tw-py-4">
-                <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ' + getStatusClass(service.isActive)">
+                <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-bold tw-rounded-full ' + getStatusClass(service.isActive)">
                   {{ getStatusText(service.isActive) }}
                 </span>
               </td>
-              <td class="tw-px-4 tw-py-4 tw-text-sm tw-text-gray-500">
+              <td class="tw-px-4 tw-py-4 tw-text-sm tw-text-gray-600 tw-font-medium">
                 {{ formatDate(service.createdAt) }}
               </td>
               <td class="tw-px-4 tw-py-4 tw-text-center">
@@ -140,21 +145,21 @@
                   <!-- Preview Button -->
                   <button (click)="previewService(service)" 
                           title="Preview" 
-                          class="tw-p-2 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md tw-transition-colors">
+                          class="tw-p-2 tw-text-green-600 hover:tw-bg-green-100 tw-rounded-lg tw-transition-colors">
                     <i class="ph ph-eye tw-text-lg"></i>
                   </button>
                   
                   <!-- Edit Button -->
                   <button (click)="editService(service)" 
                           title="Edit" 
-                          class="tw-p-2 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md tw-transition-colors">
+                          class="tw-p-2 tw-text-blue-600 hover:tw-bg-blue-100 tw-rounded-lg tw-transition-colors">
                     <i class="ph ph-pencil tw-text-lg"></i>
                   </button>
                   
                   <!-- Delete Button -->
                   <button (click)="deleteService(service)" 
                           title="Delete" 
-                          class="tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded-md tw-transition-colors">
+                          class="tw-p-2 tw-text-red-600 hover:tw-bg-red-100 tw-rounded-lg tw-transition-colors">
                     <i class="ph ph-trash tw-text-lg"></i>
                   </button>
                 </div>
@@ -164,9 +169,9 @@
             <!-- Empty State -->
             <tr *ngIf="!isLoading && services.length === 0">
               <td colspan="7" class="tw-text-center tw-py-12">
-                <i class="ph ph-package tw-text-6xl tw-text-gray-300"></i>
-                <p class="tw-text-gray-500 tw-mt-4 tw-text-lg">No services found</p>
-                <p class="tw-text-gray-400 tw-text-sm tw-mt-1">Create your first service to get started</p>
+                <i class="ph ph-package tw-text-6xl tw-text-amber-300"></i>
+                <p class="tw-text-gray-600 tw-mt-4 tw-text-lg tw-font-semibold">No services found</p>
+                <p class="tw-text-gray-500 tw-text-sm tw-mt-1">Create your first service to get started</p>
               </td>
             </tr>
           </tbody>
@@ -176,35 +181,35 @@
       <!-- Mobile Card View -->
       <div class="md:tw-hidden">
         <div *ngFor="let service of services | paginate: paginationConfig" 
-             class="tw-border-b tw-p-4 hover:tw-bg-gray-50 tw-transition-colors">
+             class="tw-border-b tw-border-amber-100 tw-p-4 hover:tw-bg-amber-50/50 tw-transition-colors">
           <div class="tw-flex tw-items-start tw-gap-3">
             <img [src]="getServiceImage(service)" 
                  [alt]="service.title" 
-                 class="tw-w-16 tw-h-16 tw-rounded-lg tw-object-cover tw-border tw-border-gray-200">
+                 class="tw-w-16 tw-h-16 tw-rounded-xl tw-object-cover tw-border-2 tw-border-amber-200 tw-shadow-md">
             <div class="tw-flex-1">
-              <h4 class="tw-font-semibold tw-text-gray-900">{{ service.title }}</h4>
-              <p class="tw-text-sm tw-text-gray-600 tw-mt-1">
+              <h4 class="tw-font-bold tw-text-indigo-900">{{ service.title }}</h4>
+              <p class="tw-text-sm tw-text-gray-600 tw-mt-1 tw-font-medium">
                 {{ service.description.length > 80 ? (service.description | slice:0:80) + '...' : service.description }}
               </p>
               <div class="tw-flex tw-items-center tw-gap-2 tw-mt-2">
-                <span class="tw-text-sm tw-font-semibold tw-text-green-600">{{ formatCurrency(service.price) }}</span>
-                <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ' + getStatusClass(service.isActive)">
+                <span class="tw-text-sm tw-font-bold tw-text-green-600">{{ formatCurrency(service.price) }}</span>
+                <span [class]="'tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-bold tw-rounded-full ' + getStatusClass(service.isActive)">
                   {{ getStatusText(service.isActive) }}
                 </span>
               </div>
               <div class="tw-flex tw-gap-2 tw-mt-3">
                 <button (click)="previewService(service)" 
-                        class="tw-flex-1 tw-p-2 tw-text-green-600 hover:tw-bg-green-50 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-colors">
+                        class="tw-flex-1 tw-p-2 tw-bg-gradient-to-r tw-from-green-600 tw-to-green-700 tw-text-white tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-gap-2 tw-font-semibold tw-shadow-md hover:tw-shadow-lg tw-transition-all">
                   <i class="ph ph-eye"></i>
                   <span class="tw-text-sm">View</span>
                 </button>
                 <button (click)="editService(service)" 
-                        class="tw-flex-1 tw-p-2 tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-colors">
+                        class="tw-flex-1 tw-p-2 tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-700 tw-text-white tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-gap-2 tw-font-semibold tw-shadow-md hover:tw-shadow-lg tw-transition-all">
                   <i class="ph ph-pencil"></i>
                   <span class="tw-text-sm">Edit</span>
                 </button>
                 <button (click)="deleteService(service)" 
-                        class="tw-flex-1 tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-colors">
+                        class="tw-flex-1 tw-p-2 tw-bg-gradient-to-r tw-from-red-600 tw-to-red-700 tw-text-white tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-gap-2 tw-font-semibold tw-shadow-md hover:tw-shadow-lg tw-transition-all">
                   <i class="ph ph-trash"></i>
                   <span class="tw-text-sm">Delete</span>
                 </button>
@@ -229,20 +234,20 @@
 
   <!-- ==================== CREATE/EDIT FORM ==================== -->
   <div *ngIf="mode === 'create' || mode === 'edit'" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4">
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-w-full tw-max-w-2xl tw-max-h-[95vh] tw-overflow-hidden">
+    <div class="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-max-w-2xl tw-max-h-[95vh] tw-overflow-hidden tw-border-2 tw-border-amber-200">
       
       <!-- Modal Header -->
-      <div class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-bg-blue-50">
+      <div class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-amber-100 tw-bg-gradient-to-r tw-from-indigo-900 tw-via-purple-800 tw-to-indigo-900">
         <div>
-          <h3 class="tw-text-xl tw-font-bold tw-text-blue-900">
+          <h3 class="tw-text-xl tw-font-bold tw-text-amber-100">
             {{ mode === 'create' ? 'Create New Service' : 'Edit Service' }}
           </h3>
-          <p class="tw-text-sm tw-text-blue-700">
+          <p class="tw-text-sm tw-text-amber-200">
             {{ mode === 'create' ? 'Add a new service with pricing' : 'Update service details' }}
           </p>
         </div>
         <button (click)="cancelForm()" 
-                class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-2xl tw-transition-colors">
+                class="tw-text-amber-200 hover:tw-text-amber-100 tw-text-2xl tw-transition-colors">
           <i class="ph ph-x"></i>
         </button>
       </div>
@@ -253,59 +258,59 @@
           
           <!-- Title -->
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            <label class="tw-block tw-text-sm tw-font-bold tw-text-indigo-900 tw-mb-2">
               Title <code class="tw-text-red-500">*</code>
             </label>
             <input formControlName="title" 
                    type="text" 
                    placeholder="Enter service title"
-                   class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent"
+                   class="tw-w-full tw-px-4 tw-py-2 tw-border-2 tw-border-amber-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-amber-400 focus:tw-border-amber-400 tw-shadow-md tw-transition-all"
                    [class.tw-border-red-500]="isFieldInvalid('title')">
-            <p *ngIf="isFieldInvalid('title')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            <p *ngIf="isFieldInvalid('title')" class="tw-text-red-500 tw-text-sm tw-mt-1 tw-font-semibold">
               {{ getFieldError('title') }}
             </p>
           </div>
 
           <!-- Description -->
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            <label class="tw-block tw-text-sm tw-font-bold tw-text-indigo-900 tw-mb-2">
               Description <code class="tw-text-red-500">*</code>
             </label>
             <textarea formControlName="description" 
                       rows="4" 
                       placeholder="Enter service description"
-                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-resize-none"
+                      class="tw-w-full tw-px-4 tw-py-2 tw-border-2 tw-border-amber-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-amber-400 focus:tw-border-amber-400 tw-resize-none tw-shadow-md tw-transition-all"
                       [class.tw-border-red-500]="isFieldInvalid('description')"></textarea>
-            <p *ngIf="isFieldInvalid('description')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            <p *ngIf="isFieldInvalid('description')" class="tw-text-red-500 tw-text-sm tw-mt-1 tw-font-semibold">
               {{ getFieldError('description') }}
             </p>
           </div>
 
           <!-- Price -->
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            <label class="tw-block tw-text-sm tw-font-bold tw-text-indigo-900 tw-mb-2">
               Price (INR) <code class="tw-text-red-500">*</code>
             </label>
             <div class="tw-relative">
-              <span class="tw-absolute tw-left-3 tw-top-2.5 tw-text-gray-500">₹</span>
+              <span class="tw-absolute tw-left-3 tw-top-2.5 tw-text-gray-600 tw-font-bold">₹</span>
               <input formControlName="price" 
                      type="number" 
                      placeholder="0" 
                      min="1"
-                     class="tw-w-full tw-pl-8 tw-pr-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent"
+                     class="tw-w-full tw-pl-8 tw-pr-3 tw-py-2 tw-border-2 tw-border-amber-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-amber-400 focus:tw-border-amber-400 tw-shadow-md tw-transition-all"
                      [class.tw-border-red-500]="isFieldInvalid('price')">
             </div>
-            <p *ngIf="isFieldInvalid('price')" class="tw-text-red-500 tw-text-sm tw-mt-1">
+            <p *ngIf="isFieldInvalid('price')" class="tw-text-red-500 tw-text-sm tw-mt-1 tw-font-semibold">
               {{ getFieldError('price') }}
             </p>
           </div>
 
           <!-- Image Upload -->
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            <label class="tw-block tw-text-sm tw-font-bold tw-text-indigo-900 tw-mb-2">
               Service Image
             </label>
-            <div class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-p-4">
+            <div class="tw-border-2 tw-border-dashed tw-border-amber-300 tw-rounded-xl tw-p-4 tw-bg-amber-50/30">
               <input #fileInput 
                      type="file" 
                      (change)="onFileSelected($event)" 
@@ -317,50 +322,50 @@
                    class="tw-mb-4">
                 <img [src]="getImagePreviewUrl() || getServiceImage(currentService!)" 
                      alt="Service Preview" 
-                     class="tw-w-full tw-h-48 tw-object-cover tw-rounded-lg tw-border tw-border-gray-200">
+                     class="tw-w-full tw-h-48 tw-object-cover tw-rounded-xl tw-border-2 tw-border-amber-200 tw-shadow-md">
               </div>
 
               <!-- Upload Button -->
               <button type="button" 
                       (click)="fileInput.click()" 
-                      class="tw-w-full tw-bg-gray-100 hover:tw-bg-gray-200 tw-text-gray-700 tw-py-2 tw-px-4 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-colors">
+                      class="tw-w-full tw-bg-gradient-to-r tw-from-amber-500 tw-to-yellow-500 hover:tw-from-amber-600 hover:tw-to-yellow-600 tw-text-indigo-950 tw-font-bold tw-py-2 tw-px-4 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-gap-2 tw-transition-all tw-shadow-md hover:tw-shadow-lg">
                 <i class="ph ph-upload-simple"></i>
                 {{ selectedFile ? 'Change Image' : 'Upload Image' }}
               </button>
 
               <!-- File Info -->
-              <div *ngIf="selectedFile" class="tw-mt-3 tw-flex tw-items-center tw-justify-between tw-bg-gray-50 tw-p-3 tw-rounded-md">
+              <div *ngIf="selectedFile" class="tw-mt-3 tw-flex tw-items-center tw-justify-between tw-bg-white tw-p-3 tw-rounded-lg tw-border tw-border-amber-200 tw-shadow-sm">
                 <div class="tw-flex tw-items-center tw-gap-2">
-                  <i class="ph ph-image tw-text-blue-600"></i>
+                  <i class="ph ph-image tw-text-blue-600 tw-text-xl"></i>
                   <div>
-                    <p class="tw-text-sm tw-font-medium tw-text-gray-700">{{ selectedFile.name }}</p>
+                    <p class="tw-text-sm tw-font-bold tw-text-gray-700">{{ selectedFile.name }}</p>
                     <p class="tw-text-xs tw-text-gray-500">{{ getFileSize(selectedFile.size) }}</p>
                   </div>
                 </div>
                 <button type="button" 
                         (click)="removeSelectedFile()" 
-                        class="tw-text-red-600 hover:tw-bg-red-50 tw-p-1 tw-rounded-md tw-transition-colors">
+                        class="tw-text-red-600 hover:tw-bg-red-100 tw-p-1 tw-rounded-md tw-transition-colors">
                   <i class="ph ph-trash tw-text-lg"></i>
                 </button>
               </div>
 
               <!-- File Error -->
-              <p *ngIf="fileError" class="tw-text-red-500 tw-text-sm tw-mt-2">{{ fileError }}</p>
+              <p *ngIf="fileError" class="tw-text-red-500 tw-text-sm tw-mt-2 tw-font-semibold">{{ fileError }}</p>
               
               <!-- Help Text -->
-              <p class="tw-text-xs tw-text-gray-500 tw-mt-2">
+              <p class="tw-text-xs tw-text-gray-600 tw-mt-2 tw-font-medium">
                 Accepted: JPG, JPEG, PNG (Max: 5MB)
               </p>
             </div>
           </div>
 
           <!-- Is Active -->
-          <div class="tw-flex tw-items-center tw-gap-2">
+          <div class="tw-flex tw-items-center tw-gap-2 tw-bg-amber-50/50 tw-p-3 tw-rounded-lg tw-border tw-border-amber-200">
             <input type="checkbox" 
                    formControlName="isActive" 
                    id="isActive"
-                   class="tw-w-4 tw-h-4 tw-text-blue-600 tw-bg-gray-100 tw-border-gray-300 tw-rounded focus:tw-ring-blue-500">
-            <label for="isActive" class="tw-text-sm tw-font-medium tw-text-gray-700">
+                   class="tw-w-4 tw-h-4 tw-text-amber-600 tw-bg-gray-100 tw-border-gray-300 tw-rounded focus:tw-ring-amber-500">
+            <label for="isActive" class="tw-text-sm tw-font-bold tw-text-indigo-900">
               Active (Show this service to users)
             </label>
           </div>
@@ -369,20 +374,20 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="tw-flex tw-justify-end tw-items-center tw-p-6 tw-border-t tw-bg-gray-50 tw-gap-3">
+      <div class="tw-flex tw-justify-end tw-items-center tw-p-6 tw-border-t tw-border-amber-100 tw-bg-amber-50/30 tw-gap-3">
         <button type="button" 
                 (click)="cancelForm()"
-                class="tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-gap-2">
+                class="tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-font-semibold tw-px-4 tw-py-2 tw-rounded-lg tw-transition-colors tw-flex tw-items-center tw-gap-2 tw-shadow-md">
           <i class="ph ph-x"></i>
           Cancel
         </button>
         <button type="button" 
                 (click)="onSubmit()" 
                 [disabled]="serviceForm.invalid || isLoading"
-                class="tw-bg-blue-600 hover:tw-bg-blue-700 disabled:tw-bg-blue-300 disabled:tw-cursor-not-allowed tw-text-white tw-px-6 tw-py-2 tw-rounded-md tw-transition-colors tw-flex tw-items-center tw-gap-2 tw-min-w-[120px]">
+                class="tw-bg-gradient-to-r tw-from-amber-500 tw-to-yellow-500 hover:tw-from-amber-600 hover:tw-to-yellow-600 disabled:tw-from-gray-300 disabled:tw-to-gray-400 disabled:tw-cursor-not-allowed tw-text-indigo-950 tw-font-bold tw-px-6 tw-py-2 tw-rounded-lg tw-transition-all tw-flex tw-items-center tw-gap-2 tw-min-w-[120px] tw-shadow-md hover:tw-shadow-lg">
           <i *ngIf="!isLoading" class="ph ph-check"></i>
           <div *ngIf="isLoading"
-               class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></div>
+               class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-indigo-950"></div>
           <span>{{ isLoading ? 'Saving...' : (mode === 'create' ? 'Create' : 'Update') }}</span>
         </button>
       </div>
@@ -390,28 +395,28 @@
   </div>
 
   <!-- ==================== PREVIEW VIEW ==================== -->
-  <div *ngIf="mode === 'preview' && currentService" class="tw-p-4 md:tw-p-7">
+  <div *ngIf="mode === 'preview' && currentService" class="tw-p-4 md:tw-p-7 tw-relative tw-z-10 tw-bg-gradient-to-br tw-from-gray-50 tw-via-amber-50/20 tw-to-purple-50/10 tw-min-h-screen">
     
     <!-- Header Section -->
     <div class="tw-flex tw-items-center tw-justify-between tw-mb-6">
       <div class="tw-flex tw-items-center tw-gap-3">
         <button (click)="backToList()" 
-                class="tw-p-2 tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded-md tw-transition-colors">
+                class="tw-p-2 tw-text-indigo-900 hover:tw-bg-amber-100 tw-rounded-lg tw-transition-colors">
           <i class="ph ph-arrow-left tw-text-xl"></i>
         </button>
         <div>
-          <h2 class="tw-text-xl tw-font-bold tw-text-gray-900">Service Details</h2>
-          <p class="tw-text-gray-600 tw-text-sm">Complete information about the service</p>
+          <h2 class="tw-text-xl tw-font-bold tw-bg-gradient-to-r tw-from-indigo-900 tw-via-purple-800 tw-to-indigo-900 tw-bg-clip-text tw-text-transparent">Service Details</h2>
+          <p class="tw-text-gray-600 tw-text-sm tw-font-medium">Complete information about the service</p>
         </div>
       </div>
       <div class="tw-flex tw-gap-2">
         <button (click)="editService(currentService)" 
-                class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+                class="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-700 hover:tw-from-blue-700 hover:tw-to-blue-800 tw-text-white tw-font-bold tw-px-4 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-transition-all tw-shadow-md hover:tw-shadow-lg">
           <i class="ph ph-pencil"></i>
           <span>Edit</span>
         </button>
         <button (click)="deleteService(currentService)" 
-                class="tw-bg-red-600 hover:tw-bg-red-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-flex tw-items-center tw-gap-2 tw-transition-colors">
+                class="tw-bg-gradient-to-r tw-from-red-600 tw-to-red-700 hover:tw-from-red-700 hover:tw-to-red-800 tw-text-white tw-font-bold tw-px-4 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-transition-all tw-shadow-md hover:tw-shadow-lg">
           <i class="ph ph-trash"></i>
           <span>Delete</span>
         </button>
@@ -419,7 +424,7 @@
     </div>
 
     <!-- Service Details Card -->
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
+    <div class="tw-bg-white tw-rounded-2xl tw-shadow-xl tw-shadow-purple-100/50 tw-overflow-hidden tw-border tw-border-amber-100">
       <div class="tw-p-6">
         <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
           
@@ -429,23 +434,23 @@
             <div>
               <img [src]="getServiceImage(currentService)" 
                    [alt]="currentService.title" 
-                   class="tw-w-full tw-h-64 tw-object-cover tw-rounded-lg tw-border tw-border-gray-200">
+                   class="tw-w-full tw-h-64 tw-object-cover tw-rounded-xl tw-border-2 tw-border-amber-200 tw-shadow-lg">
             </div>
 
             <!-- Basic Info -->
             <div>
-              <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
-                <i class="ph ph-info tw-text-blue-600 tw-mr-2"></i>
+              <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+                <i class="ph ph-info tw-text-amber-500 tw-mr-2 tw-text-xl"></i>
                 Basic Information
               </h3>
               <div class="tw-space-y-3">
                 <div>
-                  <label class="tw-text-sm tw-font-medium tw-text-gray-500">Title</label>
-                  <p class="tw-text-gray-900 tw-mt-1">{{ currentService.title }}</p>
+                  <label class="tw-text-sm tw-font-bold tw-text-gray-600">Title</label>
+                  <p class="tw-text-gray-900 tw-mt-1 tw-font-semibold">{{ currentService.title }}</p>
                 </div>
                 <div>
-                  <label class="tw-text-sm tw-font-medium tw-text-gray-500">Description</label>
-                  <p class="tw-text-gray-900 tw-mt-1">{{ currentService.description }}</p>
+                  <label class="tw-text-sm tw-font-bold tw-text-gray-600">Description</label>
+                  <p class="tw-text-gray-900 tw-mt-1 tw-font-medium">{{ currentService.description }}</p>
                 </div>
               </div>
             </div>
@@ -455,13 +460,13 @@
           <div class="tw-space-y-6">
             <!-- Pricing Info -->
             <div>
-              <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
-                <i class="ph ph-currency-inr tw-text-green-600 tw-mr-2"></i>
+              <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+                <i class="ph ph-currency-inr tw-text-amber-500 tw-mr-2 tw-text-xl"></i>
                 Pricing
               </h3>
-              <div class="tw-bg-green-50 tw-p-4 tw-rounded-lg">
-                <p class="tw-text-sm tw-text-gray-600">Price</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-green-600 tw-mt-1">
+              <div class="tw-bg-gradient-to-br tw-from-green-50 tw-to-emerald-50 tw-p-6 tw-rounded-xl tw-border-2 tw-border-green-200 tw-shadow-md">
+                <p class="tw-text-sm tw-text-gray-600 tw-font-bold">Price</p>
+                <p class="tw-text-3xl tw-font-bold tw-text-green-700 tw-mt-1">
                   {{ formatCurrency(currentService.price) }}
                 </p>
               </div>
@@ -469,12 +474,12 @@
 
             <!-- Status Info -->
             <div>
-              <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
-                <i class="ph ph-toggle-right tw-text-purple-600 tw-mr-2"></i>
+              <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+                <i class="ph ph-toggle-right tw-text-amber-500 tw-mr-2 tw-text-xl"></i>
                 Status
               </h3>
               <div>
-                <span [class]="'tw-inline-flex tw-px-3 tw-py-1 tw-text-sm tw-font-semibold tw-rounded-full ' + getStatusClass(currentService.isActive)">
+                <span [class]="'tw-inline-flex tw-px-3 tw-py-1 tw-text-sm tw-font-bold tw-rounded-full ' + getStatusClass(currentService.isActive)">
                   {{ getStatusText(currentService.isActive) }}
                 </span>
               </div>
@@ -482,18 +487,18 @@
 
             <!-- Timestamps -->
             <div>
-              <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-flex tw-items-center">
-                <i class="ph ph-clock tw-text-gray-600 tw-mr-2"></i>
+              <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+                <i class="ph ph-clock tw-text-amber-500 tw-mr-2 tw-text-xl"></i>
                 Timestamps
               </h3>
               <div class="tw-space-y-3">
                 <div>
-                  <label class="tw-text-sm tw-font-medium tw-text-gray-500">Created At</label>
-                  <p class="tw-text-gray-900 tw-mt-1">{{ formatDate(currentService.createdAt) }}</p>
+                  <label class="tw-text-sm tw-font-bold tw-text-gray-600">Created At</label>
+                  <p class="tw-text-gray-900 tw-mt-1 tw-font-semibold">{{ formatDate(currentService.createdAt) }}</p>
                 </div>
                 <div>
-                  <label class="tw-text-sm tw-font-medium tw-text-gray-500">Updated At</label>
-                  <p class="tw-text-gray-900 tw-mt-1">{{ formatDate(currentService.updatedAt) }}</p>
+                  <label class="tw-text-sm tw-font-bold tw-text-gray-600">Updated At</label>
+                  <p class="tw-text-gray-900 tw-mt-1 tw-font-semibold">{{ formatDate(currentService.updatedAt) }}</p>
                 </div>
               </div>
             </div>
