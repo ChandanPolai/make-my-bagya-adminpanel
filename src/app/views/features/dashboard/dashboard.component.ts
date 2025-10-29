@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit {
    * @returns Formatted amount in rupees
    */
   formatEarnings(amount: number): string {
-    return (amount / 100).toFixed(2);
+    return amount.toFixed(2);
   }
 
   /**
@@ -93,7 +93,7 @@ export class DashboardComponent implements OnInit {
 
   // Navigation methods for quick actions
   navigateToUsers(): void {
-    this.router.navigate(['/money-switch-users']);
+    this.router.navigate(['/users']);
   }
 
   navigateToServices(): void {
@@ -101,10 +101,7 @@ export class DashboardComponent implements OnInit {
   }
 
   navigateToPaymentLogs(): void {
-    this.router.navigate(['/payment-logs']);
+    this.router.navigate(['/transcation']);
   }
 
-  navigateToCreateService(): void {
-    this.router.navigate(['/services/create']);
-  }
 }
