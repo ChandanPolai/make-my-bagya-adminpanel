@@ -4,6 +4,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { provideDaterangepickerLocale } from 'ngx-daterangepicker-bootstrap';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { routes } from './app.routes';
 import { headerInterceptor } from './core/interceptors/http-interceptor';
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([headerInterceptor])),
     provideAnimationsAsync(),
     provideRouter(routes),
+    provideCharts(withDefaultRegisterables()), // 👈 Chart.js provider
     provideDaterangepickerLocale({
       separator: ' to ',
       applyLabel: 'Apply',

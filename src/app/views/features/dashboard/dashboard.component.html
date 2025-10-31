@@ -220,6 +220,114 @@
         </div>
       </div>
 
+      <!-- Graphical Reports Section -->
+      <div>
+        <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-4 tw-flex tw-items-center">
+          <i class="ph-fill ph-chart-line tw-text-amber-500 tw-mr-2 tw-text-2xl"></i>
+          Graphical Reports & Analytics
+        </h3>
+        
+        <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
+          
+          <!-- Line Chart - Earnings Trend -->
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-xl tw-p-6 tw-border tw-border-gray-100">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+              <h4 class="tw-text-base tw-font-bold tw-text-gray-800 tw-flex tw-items-center">
+                <i class="ph-fill ph-trend-up tw-text-emerald-500 tw-mr-2 tw-text-xl"></i>
+                Earnings Trend
+              </h4>
+              <span class="tw-text-xs tw-bg-emerald-100 tw-text-emerald-700 tw-px-3 tw-py-1 tw-rounded-full tw-font-semibold">
+                {{ (dashboardData.dateRange?.fromDate | date:'dd MMM') }} - {{ (dashboardData.dateRange?.toDate | date:'dd MMM') }}
+              </span>
+            </div>
+            <div class="tw-h-64">
+              <canvas 
+                baseChart
+                [data]="lineChartData"
+                [options]="lineChartOptions"
+                [type]="lineChartType">
+              </canvas>
+            </div>
+            <p class="tw-text-xs tw-text-gray-500 tw-mt-3 tw-text-center">
+              📈 Daily earnings performance over selected period
+            </p>
+          </div>
+
+          <!-- Bar Chart - User Growth -->
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-xl tw-p-6 tw-border tw-border-gray-100">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+              <h4 class="tw-text-base tw-font-bold tw-text-gray-800 tw-flex tw-items-center">
+                <i class="ph-fill ph-chart-bar tw-text-blue-500 tw-mr-2 tw-text-xl"></i>
+                User Growth
+              </h4>
+              <span class="tw-text-xs tw-bg-blue-100 tw-text-blue-700 tw-px-3 tw-py-1 tw-rounded-full tw-font-semibold">
+                {{ (dashboardData.dateRange?.fromDate | date:'dd MMM') }} - {{ (dashboardData.dateRange?.toDate | date:'dd MMM') }}
+              </span>
+            </div>
+            <div class="tw-h-64">
+              <canvas 
+                baseChart
+                [data]="barChartData"
+                [options]="barChartOptions"
+                [type]="barChartType">
+              </canvas>
+            </div>
+            <p class="tw-text-xs tw-text-gray-500 tw-mt-3 tw-text-center">
+              👥 New user registrations per day
+            </p>
+          </div>
+
+          <!-- Doughnut Chart - Revenue Distribution -->
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-xl tw-p-6 tw-border tw-border-gray-100">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+              <h4 class="tw-text-base tw-font-bold tw-text-gray-800 tw-flex tw-items-center">
+                <i class="ph-fill ph-chart-donut tw-text-purple-500 tw-mr-2 tw-text-xl"></i>
+                Revenue Distribution
+              </h4>
+              <span class="tw-text-xs tw-bg-purple-100 tw-text-purple-700 tw-px-3 tw-py-1 tw-rounded-full tw-font-semibold">
+                Current Period
+              </span>
+            </div>
+            <div class="tw-h-64 tw-flex tw-items-center tw-justify-center">
+              <canvas 
+                baseChart
+                [data]="doughnutChartData"
+                [options]="doughnutChartOptions"
+                [type]="doughnutChartType">
+              </canvas>
+            </div>
+            <p class="tw-text-xs tw-text-gray-500 tw-mt-3 tw-text-center">
+              💰 Period earnings vs total revenue breakdown
+            </p>
+          </div>
+
+          <!-- Pie Chart - Services Distribution -->
+          <div class="tw-bg-white tw-rounded-2xl tw-shadow-xl tw-p-6 tw-border tw-border-gray-100">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+              <h4 class="tw-text-base tw-font-bold tw-text-gray-800 tw-flex tw-items-center">
+                <i class="ph-fill ph-chart-pie-slice tw-text-teal-500 tw-mr-2 tw-text-xl"></i>
+                Services Status
+              </h4>
+              <span class="tw-text-xs tw-bg-teal-100 tw-text-teal-700 tw-px-3 tw-py-1 tw-rounded-full tw-font-semibold">
+                Live Data
+              </span>
+            </div>
+            <div class="tw-h-64 tw-flex tw-items-center tw-justify-center">
+              <canvas 
+                baseChart
+                [data]="pieChartData"
+                [options]="pieChartOptions"
+                [type]="pieChartType">
+              </canvas>
+            </div>
+            <p class="tw-text-xs tw-text-gray-500 tw-mt-3 tw-text-center">
+              ⚙️ Active vs inactive services distribution
+            </p>
+          </div>
+
+        </div>
+      </div>
+
       <!-- Quick Actions Section -->
       <div class="tw-bg-white tw-rounded-2xl tw-shadow-xl tw-shadow-amber-100/50 tw-p-6 tw-border tw-border-amber-100">
         <h3 class="tw-text-lg tw-font-bold tw-text-indigo-900 tw-mb-5 tw-flex tw-items-center">
