@@ -134,15 +134,18 @@
                     type="text"
                     placeholder="Enter Your Mobile No"
                     formControlName="mobile"
+                  inputmode="numeric"
+                  [attr.maxlength]="10"
+                  (input)="onMobileInput($event)"
                     [class]="
                       'tw-w-full tw-pl-10 tw-pr-12 tw-py-2 tw-border-2 tw-border-amber-300 tw-rounded-xl tw-text-sm tw-transition-all tw-duration-200 focus:tw-border-amber-400 focus:tw-ring-2 focus:tw-ring-amber-400 tw-shadow-md ' +
                       (profileForm.get('mobile')?.disabled ? 'tw-bg-gray-100 tw-cursor-not-allowed' : 'tw-bg-white')
                     "
                   />
                 </div>
-                <div *ngIf="profileForm.get('mobile')?.invalid && profileForm.get('mobile')?.touched" class="tw-text-red-600 tw-text-xs tw-mt-1 tw-font-semibold">
-                  Valid mobile number is required (10 digits)
-                </div>
+              <div *ngIf="profileForm.get('mobile')?.invalid && profileForm.get('mobile')?.touched" class="tw-text-red-600 tw-text-xs tw-mt-1 tw-font-semibold">
+                Mobile number must be exactly 10 digits (no special characters)
+              </div>
               </div>
             </div>
 

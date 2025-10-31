@@ -62,7 +62,8 @@ export class UserProfileComponent implements OnInit {
     this.profileForm = this.fb.group({
       name: [{value: '', disabled: true}, [Validators.required, Validators.minLength(3)]],
       email: [{value: '', disabled: true}, [Validators.required, Validators.email]],
-      mobile: [{value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]{10,15}$')]],
+      // Only digits and exactly 10 numbers
+      mobile: [{value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]{10}$')]],
     });
   }
 
@@ -128,6 +129,21 @@ export class UserProfileComponent implements OnInit {
         mobile: this.admin.mobile_number || this.admin.mobile || ''
       });
     }
+  }
+
+  // Sanitize mobile input to allow only digits and limit to 10 chars
+  onMobileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+    // Remove non-digits
+    let value = input.value.replace(/\D+/g, '');
+    // Cap at 10 digits
+    if (value.length > 10) {
+      value = value.slice(0, 10);
+    }
+    input.value = value;
+    // Update form control without emitting extra events
+    this.profileForm.get('mobile')?.setValue(value, { emitEvent: true });
   }
 
   onSubmit(): void {
