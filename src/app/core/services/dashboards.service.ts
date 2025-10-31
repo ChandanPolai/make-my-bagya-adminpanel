@@ -18,8 +18,8 @@ export class DashboardService {
    * @param date - Optional date to get stats for a specific date (defaults to current date if not provided)
    * @returns Observable of dashboard stats
    */
-  getDashboardStats(date?: string | Date): Observable<DashboardStatsResponse> {
-    const requestData: GetDashboardStatsRequest = date ? { date } : {};
+  getDashboardStats(fromDate: string | Date, toDate: string | Date): Observable<DashboardStatsResponse> {
+    const requestData: GetDashboardStatsRequest = { fromDate, toDate };
     return this.apiManager.post(apiEndpoints.DASHBOARD_STATS, requestData);
   }
 }

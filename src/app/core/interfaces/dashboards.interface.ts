@@ -1,23 +1,14 @@
-// Dashboard Stats Interface
+// Dashboard Stats Interface (new backend shape)
 export interface DashboardStats {
-  users: UserStats;
-  earnings: EarningsStats;
-}
-
-// User Statistics
-export interface UserStats {
   totalUsers: number;
-  todayUsers: number;
-  last7DaysUsers: number;
-  currentMonthUsers: number;
-}
-
-// Earnings Statistics (amounts in paise)
-export interface EarningsStats {
   totalEarnings: number;
-  todayEarnings: number;
-  last7DaysEarnings: number;
-  currentMonthEarnings: number;
+  totalServices: number;
+  dateRange: {
+    fromDate: string | Date;
+    toDate: string | Date;
+    newUsers: number;
+    earnings: number;
+  };
 }
 
 // API Response Interface
@@ -27,7 +18,8 @@ export interface DashboardStatsResponse {
   status: number;
 }
 
-// Request Interface (optional date parameter)
+// Request Interface for date range
 export interface GetDashboardStatsRequest {
-  date?: string | Date; // Optional: If not provided, current date is used
+  fromDate: string | Date;
+  toDate: string | Date;
 }
