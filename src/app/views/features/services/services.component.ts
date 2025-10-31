@@ -80,7 +80,8 @@ export class ServicesComponent implements OnInit {
     this.serviceForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      price: [0, [Validators.required, Validators.min(1)]],
+      // Price limited to max 5 digits (<= 99999)
+      price: [0, [Validators.required, Validators.min(1), Validators.max(99999)]],
       image: [''],
       isActive: [true]
     });
@@ -218,7 +219,10 @@ export class ServicesComponent implements OnInit {
     const formData = new FormData();
     formData.append('title', this.serviceForm.get('title')?.value);
     formData.append('description', this.serviceForm.get('description')?.value);
-    formData.append('price', this.serviceForm.get('price')?.value.toString());
+    // Ensure price is digits-only and capped at 5 digits
+    const rawPrice = String(this.serviceForm.get('price')?.value ?? '0').replace(/\D+/g, '');
+    const cappedPrice = rawPrice.slice(0, 5);
+    formData.append('price', cappedPrice);
     formData.append('isActive', this.serviceForm.get('isActive')?.value.toString());
 
     // Add image if selected
@@ -406,6 +410,21 @@ export class ServicesComponent implements OnInit {
     this.payload.page = 1;
     this.paginationConfig.currentPage = 1;
     this.loadServices();
+  }
+
+  /**
+   * Sanitize price input to allow only digits and cap length to 5
+   */
+  onPriceInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+    let value = (input.value || '').replace(/\D+/g, '');
+    if (value.length > 5) {
+      value = value.slice(0, 5);
+    }
+    input.value = value;
+    const numeric = value ? Number(value) : 0;
+    this.serviceForm.get('price')?.setValue(numeric, { emitEvent: true });
   }
 
   /**
