@@ -86,13 +86,13 @@
         <table class="tw-w-full tw-border-collapse">
           <thead class="tw-bg-gradient-to-r tw-from-indigo-900 tw-via-purple-800 tw-to-indigo-900">
             <tr>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">#</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Service</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase tw-w-10">#</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase tw-w-[320px]">Service</th>
               <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Description</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Price</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Status</th>
-              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Created</th>
-              <th class="tw-px-4 tw-py-3 tw-text-center tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase">Actions</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase tw-w-24">Price</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase tw-w-28">Status</th>
+              <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase tw-w-32">Created</th>
+              <th class="tw-px-4 tw-py-3 tw-text-center tw-text-xs tw-font-bold tw-text-amber-200 tw-uppercase tw-w-28">Actions</th>
             </tr>
           </thead>
           <tbody class="tw-divide-y tw-divide-amber-100">
@@ -113,12 +113,12 @@
                 {{ (paginationConfig.currentPage - 1) * paginationConfig.itemsPerPage + i + 1 }}
               </td>
               <td class="tw-px-4 tw-py-4">
-                <div class="tw-flex tw-items-center tw-gap-3">
+                <div class="tw-flex tw-items-center tw-gap-3 tw-min-w-[260px] tw-max-w-[420px]">
                   <img [src]="getServiceImage(service)" 
                        [alt]="service.title" 
-                       class="tw-w-12 tw-h-12 tw-rounded-xl tw-object-cover tw-border-2 tw-border-amber-200 tw-shadow-md">
-                  <div>
-                    <div class="tw-text-sm tw-font-bold tw-text-indigo-900 tw-break-words tw-break-all tw-whitespace-pre-wrap">{{ service.title }}</div>
+                       class="tw-w-12 tw-h-12 tw-min-w-12 tw-min-h-12 tw-rounded-xl tw-object-cover tw-border-2 tw-border-amber-200 tw-shadow-md">
+                  <div class="tw-flex-1 tw-min-w-0">
+                    <div class="tw-text-sm tw-font-bold tw-text-indigo-900 tw-whitespace-normal tw-break-words tw-leading-5">{{ service.title }}</div>
                   </div>
                 </div>
               </td>
@@ -186,7 +186,7 @@
                  [alt]="service.title" 
                  class="tw-w-16 tw-h-16 tw-rounded-xl tw-object-cover tw-border-2 tw-border-amber-200 tw-shadow-md">
             <div class="tw-flex-1">
-              <h4 class="tw-font-bold tw-text-indigo-900 tw-break-words tw-break-all tw-whitespace-pre-wrap">{{ service.title }}</h4>
+              <h4 class="tw-font-bold tw-text-indigo-900 tw-break-words tw-whitespace-pre-wrap">{{ service.title }}</h4>
               <p class="tw-text-sm tw-text-gray-600 tw-mt-1 tw-font-medium tw-break-words tw-break-all tw-whitespace-pre-wrap">
                 {{ service.description }}
               </p>
